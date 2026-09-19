@@ -1,0 +1,118 @@
+{
+  "entities": {
+    "Trip": {
+      "title": "Trip",
+      "description": "Cito Adventure hiking open trip package",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the trip",
+          "maxLength": 128
+        },
+        "nama_gunung": {
+          "type": "string",
+          "description": "Mountain name",
+          "maxLength": 100
+        },
+        "ketinggian_mdpl": {
+          "type": "string",
+          "description": "Mountain altitude in MDPL",
+          "maxLength": 50
+        },
+        "jalur": {
+          "type": "string",
+          "description": "Hiking trail",
+          "maxLength": 100
+        },
+        "status": {
+          "type": "string",
+          "description": "Trip availability status",
+          "maxLength": 50
+        },
+        "tanggal_mulai": {
+          "type": "string",
+          "description": "Trip start date",
+          "maxLength": 50
+        },
+        "tanggal_selesai": {
+          "type": "string",
+          "description": "Trip end date",
+          "maxLength": 50
+        },
+        "durasi": {
+          "type": "string",
+          "description": "Duration text",
+          "maxLength": 100
+        },
+        "min_peserta": {
+          "type": "string",
+          "description": "Minimum participants",
+          "maxLength": 20
+        },
+        "max_peserta": {
+          "type": "string",
+          "description": "Maximum participants",
+          "maxLength": 20
+        },
+        "extra_porter": {
+          "type": "string",
+          "description": "Extra porter note",
+          "maxLength": 100
+        },
+        "catatan_penting": {
+          "type": "string",
+          "description": "Important hiking prep notes",
+          "maxLength": 2000
+        },
+        "itinerary": {
+          "type": "string",
+          "description": "Trip itinerary itinerary schedule",
+          "maxLength": 10000
+        },
+        "kontak_wa_jatim": {
+          "type": "string",
+          "description": "WhatsApp contact for East Java",
+          "maxLength": 50
+        },
+        "kontak_wa_jakarta": {
+          "type": "string",
+          "description": "WhatsApp contact for Jakarta",
+          "maxLength": 50
+        },
+        "kontak_ig": {
+          "type": "string",
+          "description": "Instagram account username",
+          "maxLength": 50
+        }
+      },
+      "required": ["id", "nama_gunung", "jalur", "tanggal_mulai"]
+    },
+    "AppSetting": {
+      "title": "AppSetting",
+      "description": "Global application setting or default text",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "value": {
+          "type": "string",
+          "maxLength": 5000
+        }
+      },
+      "required": ["id", "value"]
+    }
+  },
+  "firestore": {
+    "/trips/{tripId}": {
+      "schema": "Trip",
+      "description": "Collection of all Cito Adventure trips"
+    },
+    "/settings/{settingId}": {
+      "schema": "AppSetting",
+      "description": "Global app settings and defaults"
+    }
+  }
+}

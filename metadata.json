@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix Remix Remix Remix Remix Cito Adventure - Arsip Trip Gunung",
+  "description": "Aplikasi PWA manajemen dan arsip trip pendakian gunung Cito Adventure Madiun dengan generator caption Instagram, itinerary, dan ekspor poster 4:5 serta 9:16.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

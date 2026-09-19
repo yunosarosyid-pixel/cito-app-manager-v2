@@ -1,0 +1,12 @@
+{
+  "projectId": "citoappmanagerv2",
+  "appId": "1:764097446971:web:b4c80a080fa2500ac9881e",
+  "apiKey": "AIzaSyDlLWz4GtIs9dMib--FultMk-QUmcUqc1o",
+  "authDomain": "citoappmanagerv2.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "citoappmanagerv2.firebasestorage.app",
+  "messagingSenderId": "764097446971",
+  "measurementId": "",
+  "oAuthClientId": "",
+  "recaptchaSiteKey": ""
+}

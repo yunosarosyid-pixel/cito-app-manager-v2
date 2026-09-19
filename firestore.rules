@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Validasi struktur data Trip agar database terlindungi dari data sampah/injeksi liar
+    function isValidTrip(data) {
+      return data.keys().hasAll(['id', 'nama_gunung', 'jalur', 'tanggal_mulai'])
+        && data.id is string && data.id.size() > 0 && data.id.size() <= 128
+        && data.nama_gunung is string && data.nama_gunung.size() > 0 && data.nama_gunung.size() <= 150
+        && data.jalur is string && data.jalur.size() <= 150
+        && data.tanggal_mulai is string && data.tanggal_mulai.size() <= 50;
+    }
+
+    // Uji koneksi health-check saat startup: hanya baca, tolak tulis
+    match /test/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Trips collection: dapat dibaca publik (katalog open trip) dan divalidasi ketat saat simpan
+    match /trips/{tripId} {
+      allow read: if true;
+      allow create: if request.resource.data.id == tripId && isValidTrip(request.resource.data);
+      allow update: if request.resource.data.id == tripId && isValidTrip(request.resource.data);
+      allow delete: if true;
+    }
+
+    // Global settings collection (brand logo dll): dapat dibaca publik & divalidasi saat tulis
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if settingId in ['brand_logo', 'app_config']
+        && (request.resource == null || (request.resource.data.id == settingId && request.resource.data.value is string));
+    }
+
+    // Default deny catch-all untuk koleksi lainnya
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
