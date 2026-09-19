@@ -106,12 +106,16 @@ export default function App() {
   // Toast notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Mobile view toggle ('list' | 'detail')
+  // Mobile view toggle ('list' | 'detail'). Kalau halaman dibuka lewat deep-link
+  // eksplisit (?trip=xxx, mis. dari tombol "Salin Link Kit"), langsung ke detail
+  // trip tersebut. Selain itu (refresh biasa, atau setelah hapus trip), selalu
+  // mulai dari Daftar Trip — sebelumnya nilai 'detail' tersisa di URL dari sesi
+  // sebelumnya membuat tampilan "nyangkut" di tab Detail & Export walau trip
+  // yang aktif sudah berbeda/terhapus.
   const [mobileTab, setMobileTab] = useState<'list' | 'detail'>(() => {
     if (typeof window === 'undefined') return 'list';
     const params = new URLSearchParams(window.location.search);
-    if (params.get('tab') === 'detail' || params.get('trip')) return 'detail';
-    return 'list';
+    return params.get('trip') ? 'detail' : 'list';
   });
 
   // Sinkronisasi selectedTripId & mobileTab ke URL query params & localStorage agar tahan refresh di HP & PC
@@ -124,16 +128,29 @@ export default function App() {
     const newTab = tab || 'detail';
     setMobileTab(newTab);
 
-    // Update URL tanpa reload halaman
+    // Update URL tanpa reload halaman. Simpan trip id saja (untuk deep-link/
+    // share), TIDAK menyimpan tab, supaya refresh halaman selalu mulai dari
+    // Daftar Trip di mobile, bukan nyangkut di tab Detail & Export dari sesi
+    // sebelumnya (mis. setelah trip yang sedang dilihat dihapus).
     if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
       const url = new URL(window.location.href);
       url.searchParams.set('trip', tripId);
-      url.searchParams.set('tab', newTab);
+      url.searchParams.delete('tab');
       window.history.replaceState({}, '', url.toString());
     }
   }, []);
 
   useEffect(() => {
+    // Bersihkan sisa parameter ?tab=detail dari URL sesi sebelumnya, supaya
+    // tampilan selalu mulai dari Daftar Trip saat halaman dibuka/refresh.
+    // Parameter ?trip=xxx tetap dipertahankan untuk deep-link ke trip tertentu.
+    if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('tab')) {
+        url.searchParams.delete('tab');
+        window.history.replaceState({}, '', url.toString());
+      }
+    }
     // 1. Instant local read so app renders immediately without empty flash
     const localTrips = sortTripsByDepartureDate(getStoredTrips());
     setTrips(localTrips);
@@ -668,11 +685,6 @@ export default function App() {
           <button
             onClick={() => {
               setMobileTab('list');
-              if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
-                const url = new URL(window.location.href);
-                url.searchParams.set('tab', 'list');
-                window.history.replaceState({}, '', url.toString());
-              }
             }}
             className={`flex-1 py-1.5 rounded text-xs font-bold transition-all ${
               mobileTab === 'list'
