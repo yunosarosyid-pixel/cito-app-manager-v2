@@ -24,16 +24,16 @@ import {
   AlertCircle,
   Lock,
 } from 'lucide-react';
-import { Trip, MeetingPoint, TripSchedule } from '../types';
+import { Trip, MeetingPoint, TripSchedule, TripDefaults } from '../types';
 import { POPULAR_MOUNTAINS } from '../data/mountains';
 import {
   DEFAULT_CITO_INCLUDE,
   DEFAULT_CITO_EXCLUDE,
   DEFAULT_CITO_SK,
-  getDefaultCatatanPenting,
+  DEFAULT_CITO_CATATAN_PENTING,
 } from './TripModal';
 import { calculateDuration, computeAutoEndDate, generateDefaultItinerary } from '../utils/formatters';
-import { saveTripToCloud } from '../firebase';
+import { saveTripToCloud, subscribeToTripDefaults } from '../firebase';
 import { saveStoredTrips, getStoredTrips, getAdminPhone, setMasYunoAuthenticated } from '../utils/storage';
 import { playIncomingDraftChime } from '../utils/audioNotify';
 import { ItineraryEditor } from './ItineraryEditor';
@@ -76,6 +76,43 @@ export const TeamInputView: React.FC<TeamInputViewProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedTrip, setSubmittedTrip] = useState<Trip | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Default trip dari Firestore (settings/trip_defaults), diatur admin lewat
+  // TripModal, supaya form input tim ini otomatis ikut default terbaru di
+  // semua device.
+  const [cloudDefaults, setCloudDefaults] = useState<TripDefaults | null>(null);
+  const cloudDefaultsAppliedRef = React.useRef(false);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToTripDefaults((defaults) => {
+      setCloudDefaults(defaults);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Terapkan default cloud sekali saat pertama kali diterima, tanpa menimpa
+  // apa pun yang sudah sempat diketik pengguna.
+  useEffect(() => {
+    if (!cloudDefaults || cloudDefaultsAppliedRef.current) return;
+    cloudDefaultsAppliedRef.current = true;
+    if (cloudDefaults.durasi) setDurasi(cloudDefaults.durasi);
+    if (cloudDefaults.min_peserta) setMinPeserta(cloudDefaults.min_peserta);
+    if (cloudDefaults.min_peserta_jakarta) setMinPesertaJakarta(cloudDefaults.min_peserta_jakarta);
+    if (cloudDefaults.max_peserta) setMaxPeserta(cloudDefaults.max_peserta);
+    if (cloudDefaults.harga_mepo && cloudDefaults.harga_mepo.length > 0) {
+      setMepoList(cloudDefaults.harga_mepo);
+    }
+    if (cloudDefaults.include && cloudDefaults.include.length > 0) {
+      setIncludeText(cloudDefaults.include.join('\n'));
+    }
+    if (cloudDefaults.exclude && cloudDefaults.exclude.length > 0) {
+      setExcludeText(cloudDefaults.exclude.join('\n'));
+    }
+    if (cloudDefaults.extra_porter) setExtraPorter(cloudDefaults.extra_porter);
+    if (cloudDefaults.sk_berlaku && cloudDefaults.sk_berlaku.length > 0) {
+      setSkText(cloudDefaults.sk_berlaku.join('\n'));
+    }
+  }, [cloudDefaults]);
 
   const currentMountain = POPULAR_MOUNTAINS[parseInt(selectedMountainIndex, 10)] || null;
 
@@ -258,7 +295,7 @@ export const TeamInputView: React.FC<TeamInputViewProps> = ({
       exclude: excludeText.split('\n').map((s) => s.trim()).filter(Boolean),
       extra_porter: extraPorter.trim() || 'Jika di perlukan',
       sk_berlaku: skText.split('\n').map((s) => s.trim()).filter(Boolean),
-      catatan_penting: getDefaultCatatanPenting(),
+      catatan_penting: cloudDefaults?.catatan_penting || DEFAULT_CITO_CATATAN_PENTING,
       itinerary: finalItinerary,
       kontak_wa: '+6282230444428 / +6289503689266',
       kontak_wa_jatim: '+6282230444428',
