@@ -106,17 +106,15 @@ export default function App() {
   // Toast notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Mobile view toggle ('list' | 'detail'). Kalau halaman dibuka lewat deep-link
-  // eksplisit (?trip=xxx, mis. dari tombol "Salin Link Kit"), langsung ke detail
-  // trip tersebut. Selain itu (refresh biasa, atau setelah hapus trip), selalu
-  // mulai dari Daftar Trip — sebelumnya nilai 'detail' tersisa di URL dari sesi
-  // sebelumnya membuat tampilan "nyangkut" di tab Detail & Export walau trip
-  // yang aktif sudah berbeda/terhapus.
-  const [mobileTab, setMobileTab] = useState<'list' | 'detail'>(() => {
-    if (typeof window === 'undefined') return 'list';
-    const params = new URLSearchParams(window.location.search);
-    return params.get('trip') ? 'detail' : 'list';
-  });
+  // Mobile view toggle ('list' | 'detail'). SELALU mulai dari Daftar Trip saat
+  // halaman dimuat/refresh — apapun isi URL-nya. Sebelumnya ini sempat memeriksa
+  // apakah ada ?trip=xxx di URL dan langsung lompat ke 'detail', tapi karena
+  // setiap kali memilih trip URL SELALU diberi ?trip=xxx (untuk keperluan share
+  // link) dan parameter itu tidak pernah dihapus, hasilnya sama saja dengan bug
+  // lama: setiap refresh selalu jatuh ke tab Detail & Export. Klik trip di
+  // daftar tetap membawa ke tab detail seperti biasa (lewat handleSelectTrip);
+  // ini hanya mengubah kondisi AWAL saat halaman pertama kali dimuat.
+  const [mobileTab, setMobileTab] = useState<'list' | 'detail'>('list');
 
   // Sinkronisasi selectedTripId & mobileTab ke URL query params & localStorage agar tahan refresh di HP & PC
   const handleSelectTrip = useCallback((tripId: string, tab?: 'list' | 'detail') => {
