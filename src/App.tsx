@@ -281,8 +281,7 @@ export default function App() {
     updated = sortTripsByDepartureDate(updated);
     setTrips(updated);
     saveStoredTrips(updated);
-    setSelectedTripId(savedTrip.id);
-    setMobileTab('detail');
+    handleSelectTrip(savedTrip.id, 'detail');
 
     // Sync directly to Cloud Firestore in background
     setCloudStatus('syncing');
@@ -302,10 +301,23 @@ export default function App() {
     setTrips(updated);
     saveStoredTrips(updated);
     showToast('Trip berhasil dihapus');
-    if (selectedTripId === id) {
-      setSelectedTripId(updated[0]?.id || null);
-      if (updated.length === 0) {
+    if (selectedTripId === id || activeTrip?.id === id) {
+      // Pilih trip di sebelahnya pada daftar yang sedang tampil (bukan selalu trip paling atas),
+      // dan simpan pilihannya ke URL + penyimpanan lokal supaya refresh tidak kembali ke trip lain.
+      const list = filteredTrips.length > 0 ? filteredTrips : trips;
+      const idx = list.findIndex((t) => t.id === id);
+      const neighbor = list[idx + 1] || list[idx - 1] || null;
+      if (neighbor && neighbor.id !== id) {
+        handleSelectTrip(neighbor.id, mobileTab);
+      } else {
+        setSelectedTripId(null);
         setMobileTab('list');
+        try {
+          localStorage.removeItem('cito_active_trip_id');
+          const url = new URL(window.location.href);
+          url.searchParams.delete('trip');
+          window.history.replaceState({}, '', url.toString());
+        } catch {}
       }
     }
 

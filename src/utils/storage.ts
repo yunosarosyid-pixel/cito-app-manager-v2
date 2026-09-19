@@ -255,9 +255,11 @@ export function getStoredTrips(): Trip[] {
  */
 export function sortTripsByDepartureDate(trips: Trip[]): Trip[] {
   return [...trips].sort((a, b) => {
-    // 1. Draf tim lapangan selalu di atas
-    if (a.is_draft && !b.is_draft) return -1;
-    if (!a.is_draft && b.is_draft) return 1;
+    // 1. Hanya draf KIRIMAN TIM lapangan yang dipin di atas (draf buatan admin ikut urutan tanggal)
+    const pinA = !!(a.is_draft && a.from_team);
+    const pinB = !!(b.is_draft && b.from_team);
+    if (pinA && !pinB) return -1;
+    if (!pinA && pinB) return 1;
 
     // 2. Berdasarkan tanggal jadwal keberangkatan (tanggal_mulai)
     const timeA = a.tanggal_mulai ? new Date(a.tanggal_mulai).getTime() : NaN;
