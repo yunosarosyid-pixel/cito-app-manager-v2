@@ -217,11 +217,18 @@ export const TripModal: React.FC<TripModalProps> = ({
 
   // Simpan satu/lebih field sebagai default trip baru ke Firestore (sinkron semua device)
   const handleSaveAsDefault = (fieldLabel: string, patch: TripDefaults) => {
-    saveTripDefaultsToCloud(patch).catch((err) => {
-      console.warn('Gagal menyimpan default ke cloud:', err);
-    });
-    setSavedFieldNotice(fieldLabel);
-    setTimeout(() => setSavedFieldNotice((cur) => (cur === fieldLabel ? null : cur)), 2500);
+    saveTripDefaultsToCloud(patch)
+      .then(() => {
+        setSavedFieldNotice(fieldLabel);
+        setTimeout(() => setSavedFieldNotice((cur) => (cur === fieldLabel ? null : cur)), 2500);
+      })
+      .catch((err) => {
+        console.warn('Gagal menyimpan default ke cloud:', err);
+        window.alert(
+          'Gagal menyimpan default ke cloud. Cek koneksi internet Anda, lalu coba lagi.\n\nDetail: ' +
+            (err instanceof Error ? err.message : String(err))
+        );
+      });
   };
 
   // Handle mountain dropdown change
@@ -1041,11 +1048,17 @@ export const TripModal: React.FC<TripModalProps> = ({
                   <button
                     type="button"
                     onClick={() => {
-                      saveTripDefaultsToCloud({ catatan_penting: catatanPenting.trim() }).catch((err) =>
-                        console.warn('Gagal menyimpan default ke cloud:', err)
-                      );
-                      setDefaultCatatanSaved(true);
-                      setTimeout(() => setDefaultCatatanSaved(false), 3000);
+                      saveTripDefaultsToCloud({ catatan_penting: catatanPenting.trim() })
+                        .then(() => {
+                          setDefaultCatatanSaved(true);
+                          setTimeout(() => setDefaultCatatanSaved(false), 3000);
+                        })
+                        .catch((err) => {
+                          console.warn('Gagal menyimpan default ke cloud:', err);
+                          window.alert(
+                            'Gagal menyimpan default ke cloud. Cek koneksi internet Anda, lalu coba lagi.'
+                          );
+                        });
                     }}
                     className="text-[11px] font-bold text-[#15803D] hover:text-green-900 bg-green-100 hover:bg-green-200 px-2 py-0.5 rounded cursor-pointer transition-colors"
                     title="Simpan teks catatan penting ini sebagai template default permanen untuk semua trip baru (tersinkron di semua device)"
@@ -1056,11 +1069,17 @@ export const TripModal: React.FC<TripModalProps> = ({
                     type="button"
                     onClick={() => {
                       setCatatanPenting(DEFAULT_CITO_CATATAN_PENTING);
-                      saveTripDefaultsToCloud({ catatan_penting: DEFAULT_CITO_CATATAN_PENTING }).catch((err) =>
-                        console.warn('Gagal menyimpan default ke cloud:', err)
-                      );
-                      setDefaultCatatanSaved(true);
-                      setTimeout(() => setDefaultCatatanSaved(false), 3000);
+                      saveTripDefaultsToCloud({ catatan_penting: DEFAULT_CITO_CATATAN_PENTING })
+                        .then(() => {
+                          setDefaultCatatanSaved(true);
+                          setTimeout(() => setDefaultCatatanSaved(false), 3000);
+                        })
+                        .catch((err) => {
+                          console.warn('Gagal menyimpan default ke cloud:', err);
+                          window.alert(
+                            'Gagal menyimpan default ke cloud. Cek koneksi internet Anda, lalu coba lagi.'
+                          );
+                        });
                     }}
                     className="text-[11px] font-bold text-[#275d1d] hover:text-[#1a3814] bg-[#275d1d]/10 hover:bg-[#275d1d]/20 px-2 py-0.5 rounded cursor-pointer transition-colors"
                     title="Kembalikan ke template catatan penting resmi Cito Adventure"
