@@ -108,6 +108,23 @@ function aistudioMediaPlugin(): Plugin {
 export default defineConfig(() => {
   return {
     base: '/',
+    build: {
+      rollupOptions: {
+        output: {
+          // Pecah bundle besar jadi beberapa file lebih kecil supaya proses
+          // precache Service Worker (untuk install PWA) tidak macet di
+          // jaringan HP yang lambat/tidak stabil.
+          manualChunks: {
+            firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+            pdf: ['jspdf'],
+            zip: ['jszip'],
+            qrcode: ['qrcode'],
+            motion: ['motion'],
+            icons: ['lucide-react'],
+          },
+        },
+      },
+    },
     plugins: [
       react(),
       tailwindcss(),
@@ -119,7 +136,7 @@ export default defineConfig(() => {
         },
         includeAssets: ['favicon.png', 'apple-touch-icon.png', 'logo.png'],
         manifest: {
-          id: '/?v=20260919v3',
+          id: '/?v=20260919v4',
           name: 'Cito Trip Manager V2',
           short_name: 'Cito V2',
           description: 'Aplikasi manajemen arsip trip dan pembuat poster serta caption open trip gunung Cito Adventure Madiun.',
