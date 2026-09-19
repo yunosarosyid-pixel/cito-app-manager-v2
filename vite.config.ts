@@ -119,7 +119,7 @@ export default defineConfig(() => {
         },
         includeAssets: ['favicon.png', 'apple-touch-icon.png', 'logo.png'],
         manifest: {
-          id: '/?v=20260913',
+          id: '/?v=20260919v2',
           name: 'Cito Trip Manager V2',
           short_name: 'Cito V2',
           description: 'Aplikasi manajemen arsip trip dan pembuat poster serta caption open trip gunung Cito Adventure Madiun.',

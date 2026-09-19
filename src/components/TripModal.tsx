@@ -99,6 +99,12 @@ export const TripModal: React.FC<TripModalProps> = ({
   // Available trails for currently selected mountain
   const currentMountain = POPULAR_MOUNTAINS[parseInt(selectedMountainIndex, 10)] || null;
 
+  // Menandai apakah default cloud sudah diterapkan untuk sesi "Trip Baru" yang
+  // sedang terbuka ini. Mencegah form ter-reset ulang setiap kali cloudDefaults
+  // berubah (misalnya tepat setelah menekan "Jadikan Default"), yang sebelumnya
+  // membuat isian form yang sedang diketik terasa "kembali ke awal".
+  const newTripDefaultsAppliedRef = React.useRef(false);
+
   // Langganan default trip dari Firestore (settings/trip_defaults), supaya
   // konsisten di semua device dan bisa diedit langsung dari Firebase Console.
   useEffect(() => {
@@ -107,6 +113,14 @@ export const TripModal: React.FC<TripModalProps> = ({
     });
     return () => unsubscribe();
   }, []);
+
+  // Reset flag setiap kali modal dibuka ulang dalam mode "Trip Baru", supaya
+  // default cloud tetap diterapkan saat form benar-benar baru dibuka.
+  useEffect(() => {
+    if (isOpen && !tripToEdit) {
+      newTripDefaultsAppliedRef.current = false;
+    }
+  }, [isOpen, tripToEdit]);
 
   useEffect(() => {
     if (tripToEdit) {
@@ -148,6 +162,14 @@ export const TripModal: React.FC<TripModalProps> = ({
         setSelectedMountainIndex('custom');
       }
     } else {
+      // Baru terapkan default sekali per sesi form terbuka; abaikan perubahan
+      // cloudDefaults berikutnya selama form masih terbuka (mis. setelah klik
+      // "Jadikan Default"), supaya isian yang sedang diketik tidak tertimpa.
+      if (newTripDefaultsAppliedRef.current) {
+        return;
+      }
+      newTripDefaultsAppliedRef.current = true;
+
       // New Trip Default: Gunung Sindoro
       const defaultMtn = POPULAR_MOUNTAINS[0];
       setSelectedMountainIndex('0');
