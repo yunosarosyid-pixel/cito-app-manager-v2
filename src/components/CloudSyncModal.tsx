@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Trip } from '../types';
 import { uploadAllTripsToCloud, fetchAllCloudTrips, saveTripToCloud } from '../firebase';
+import { ADMIN_SECRET } from '../utils/storage';
 import {
   getDeletedTripIds,
   saveStoredTrips,
@@ -46,7 +47,7 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const adminUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}${window.location.pathname}?admin=yuno`
+    ? `${window.location.origin}${window.location.pathname}?admin=${ADMIN_SECRET}`
     : '';
 
   useEffect(() => {

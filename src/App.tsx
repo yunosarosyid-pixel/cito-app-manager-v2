@@ -30,6 +30,7 @@ import {
   isMasYunoAuthenticated,
   setMasYunoAuthenticated,
   checkAdminAccessInUrl,
+  ADMIN_SECRET,
   sortTripsByDepartureDate,
 } from './utils/storage';
 import {
@@ -65,10 +66,6 @@ export default function App() {
     // Explicit query parameters
     if (params.get('mode') === 'tim' || window.location.hash === '#tim') {
       return 'tim';
-    }
-    if (params.get('mode') === 'admin' || window.location.hash === '#admin') {
-      setMasYunoAuthenticated(true);
-      return 'admin';
     }
     // Check secret in URL
     const hasSecret = checkAdminAccessInUrl(window.location.search, window.location.hash);
@@ -401,7 +398,7 @@ export default function App() {
   };
 
   const handleCopyAdminKeyLink = () => {
-    const url = `${window.location.origin}${window.location.pathname}?admin=yuno`;
+    const url = `${window.location.origin}${window.location.pathname}?admin=${ADMIN_SECRET}`;
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(url).then(() => {
         showToast('🔑 Link Kunci Akses Mas Yuno berhasil disalin! Simpan di WhatsApp/Catatan pribadi Mas Yuno.');
@@ -414,7 +411,7 @@ export default function App() {
   };
 
   const handleLockToTeamMode = () => {
-    if (confirm('Kunci perangkat ini kembali ke Mode Tim Lapangan? (Untuk membuka kembali, buka link rahasia ?admin=yuno)')) {
+    if (confirm('Kunci perangkat ini kembali ke Mode Tim Lapangan? (Untuk membuka kembali, buka link rahasia Mas Yuno)')) {
       setMasYunoAuthenticated(false);
       setViewMode('tim');
       showToast('🔒 Perangkat ini telah dikunci ke Mode Tim Lapangan.');
@@ -528,9 +525,6 @@ export default function App() {
   if (viewMode === 'tim') {
     return (
       <TeamInputView
-        onUnlockAdmin={() => {
-          handleSetViewMode('admin');
-        }}
         onTripSubmitted={(newTrip) => {
           setSelectedTripId(newTrip.id);
           setIsDraftBannerDismissed(false);

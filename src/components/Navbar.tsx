@@ -264,7 +264,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               type="button"
               onClick={onCopyAdminKeyLink}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-white shadow-sm border border-emerald-300/40 transition-all cursor-pointer active:scale-95"
-              title="Salin Link Kunci Rahasia Pemilik Mas Yuno (?admin=yuno)"
+              title="Salin Link Kunci Rahasia Pemilik Mas Yuno"
             >
               <Key className="w-3.5 h-3.5 text-white" />
               <span>Kunci Akses Mas Yuno</span>

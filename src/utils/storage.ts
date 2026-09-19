@@ -573,23 +573,14 @@ export function setMasYunoAuthenticated(status: boolean): void {
   }
 }
 
-export function checkAdminAccessInUrl(search: string, hash: string): boolean {
+// Kunci rahasia admin. Hanya link ?admin=<kunci> yang membuka Mode Admin.
+// Jangan dibagikan ke tim. Ganti nilainya kapan saja untuk membuat link baru.
+export const ADMIN_SECRET = 'cito-54b7db96a4ec2d27';
+
+export function checkAdminAccessInUrl(search: string, _hash: string): boolean {
   try {
     const params = new URLSearchParams(search);
-    const adminVal = (params.get('admin') || '').toLowerCase().trim();
-    const kunciVal = (params.get('kunci') || '').toLowerCase().trim();
-    
-    // Support ?admin=yuno, ?admin=citoyuno, ?kunci=yuno, ?masyuno, ?yuno
-    if (adminVal === 'yuno' || adminVal === 'citoyuno' || kunciVal === 'yuno') {
-      return true;
-    }
-    if (params.has('masyuno') || params.has('yuno')) {
-      return true;
-    }
-    const cleanHash = (hash || '').toLowerCase().trim();
-    if (cleanHash === '#masyuno' || cleanHash === '#admin-yuno' || cleanHash === '#yuno') {
-      return true;
-    }
+    return (params.get('admin') || '').trim() === ADMIN_SECRET;
   } catch {
     // ignore
   }
