@@ -152,7 +152,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </div>
             <h1 className="text-lg sm:text-xl font-extrabold font-['Montserrat'] tracking-tight text-white leading-tight">
-              Cito Trip Manager
+              Cito Trip Manager V2
             </h1>
           </div>
         </div>
