@@ -204,7 +204,7 @@ export const TripDetail: React.FC<TripDetailProps> = ({
           </div>
 
           {/* Action Buttons Bar */}
-          <div className="flex items-center gap-1.5 self-start sm:self-start flex-wrap shrink-0">
+          <div className="flex items-center gap-1.5 self-start flex-wrap shrink-0">
             {trip.is_draft ? (
               <button
                 onClick={() => {
@@ -214,14 +214,14 @@ export const TripDetail: React.FC<TripDetailProps> = ({
                     from_team: trip.from_team === true,
                     updated_at: Date.now(),
                   };
-                  onSaveTrip(approved);
+                  onSaveTrip?.(approved);
                   const authorLabel = trip.from_team ? 'Draf Tim' : 'Draf Admin';
                   onShowToast(`${authorLabel} ${trip.nama_gunung} resmi diterbitkan ke FINAL (Siap Promosi)!`);
                 }}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e4916] hover:bg-[#15340f] text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
                 title="Klik untuk mengubah status trip menjadi Final"
               >
-                <CheckCircle className="w-3.5 h-3.5 text-white" />
+                <CheckCircle className="w-3.5 h-3.5" />
                 <span>Terbitkan Final</span>
               </button>
             ) : (
@@ -233,15 +233,17 @@ export const TripDetail: React.FC<TripDetailProps> = ({
                     from_team: trip.from_team === true,
                     updated_at: Date.now(),
                   };
-                  onSaveTrip(toDraft);
+                  onSaveTrip?.(toDraft);
                   onShowToast(`Trip ${trip.nama_gunung} dikembalikan ke DRAFT.`);
                 }}
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold transition-colors cursor-pointer"
                 title="Kembalikan status trip ke Draf"
               >
                 <span>Ubah ke Draft</span>
               </button>
             )}
+
+            <div className="h-4 w-px bg-slate-200 mx-0.5 hidden sm:block" />
 
             <button
               onClick={() => {
@@ -251,8 +253,8 @@ export const TripDetail: React.FC<TripDetailProps> = ({
                   window.open(getTripMediaKitUrl(trip), '_blank');
                 }
               }}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-700 text-xs font-semibold transition-colors cursor-pointer shadow-xs"
-              title="Pratinjau Media Kit"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-slate-100 text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+              title="Pratinjau Media Kit Publik"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
               <span>Media Kit</span>
@@ -269,27 +271,27 @@ export const TripDetail: React.FC<TripDetailProps> = ({
                   });
                 }
               }}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-semibold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs font-semibold transition-colors cursor-pointer"
               title="Salin Link Media Kit untuk dikirimkan ke WhatsApp tim"
             >
-              <Share2 className="w-3.5 h-3.5 text-slate-600" />
-              <span>Salin Link Kit</span>
+              <Share2 className="w-3.5 h-3.5 text-slate-500" />
+              <span>Salin Link</span>
             </button>
 
             <button
               onClick={() => onEdit(trip)}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-semibold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs font-semibold transition-colors cursor-pointer"
             >
-              <Edit3 className="w-3.5 h-3.5 text-slate-600" />
+              <Edit3 className="w-3.5 h-3.5 text-slate-500" />
               <span>Edit</span>
             </button>
 
             <button
               onClick={() => onDelete(trip)}
-              className="inline-flex items-center gap-1 px-2 py-1.5 rounded hover:bg-rose-50 text-rose-600 border border-rose-200 text-xs font-semibold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 text-xs font-semibold transition-colors cursor-pointer"
               title="Hapus trip ini"
             >
-              <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+              <Trash2 className="w-3.5 h-3.5" />
               <span>Hapus</span>
             </button>
           </div>
@@ -369,15 +371,15 @@ export const TripDetail: React.FC<TripDetailProps> = ({
       </div>
 
       {/* Export Action Bar (PNG 4:5 & 9:16, PDF, TXT) */}
-      <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs space-y-3.5">
+      <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
           <div>
-            <h3 className="text-xs sm:text-sm font-bold text-slate-800 uppercase tracking-wider font-['Montserrat'] flex items-center gap-2">
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider font-['Montserrat'] flex items-center gap-2">
               <Download className="w-4 h-4 text-[#1e4916]" />
               Pusat Export Media & Arsip Trip
             </h3>
-            <p className="text-xs text-slate-600 mt-0.5">
-              Desain pamflet resmi Cito Adventure (Cover, Fasilitas, Rundown, Catatan Penting, & Kontak).
+            <p className="text-xs text-slate-500 mt-0.5">
+              Ekspor instan pamflet visual resolusi tinggi, poster itinerary, dan berkas arsip resmi.
             </p>
           </div>
 
@@ -386,115 +388,148 @@ export const TripDetail: React.FC<TripDetailProps> = ({
               setStudioInitialSlide('cover');
               setIsStudioOpen(true);
             }}
-            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-[#1e4916] hover:bg-[#15340f] text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer shrink-0"
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-[#1e4916] hover:bg-[#15340f] text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer shrink-0"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
             <span>Studio Desain Pamflet</span>
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {/* Card Export Pamflet Feed & Story */}
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2 flex flex-col justify-between">
-            <div className="space-y-1">
-              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                <Image className="w-3.5 h-3.5 text-[#1e4916]" />
-                Pamflet Cover & Slide Utama
-              </span>
-              <p className="text-[11px] text-slate-600 leading-snug">
-                Desain resmi dengan logo Cito Adventure, judul gunung, harga start, dan floating booking bar.
-              </p>
+        {/* Structured Row Items (No nested cards, clean dividers) */}
+        <div className="divide-y divide-slate-100 text-xs">
+          {/* Row 1: Pamflet Cover & Slide Utama */}
+          <div className="py-3 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-0.5 min-w-0">
+              <div className="flex items-center gap-2.5">
+                <span className="w-7 h-7 rounded-lg bg-emerald-50 text-[#1e4916] border border-emerald-200/60 flex items-center justify-center shrink-0">
+                  <Image className="w-3.5 h-3.5" />
+                </span>
+                <div>
+                  <h4 className="font-bold text-slate-900 font-['Montserrat'] text-xs sm:text-sm">
+                    Pamflet Cover & Slide Utama
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    Logo resmi Cito, judul gunung, harga start meeting point, & booking bar.
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="space-y-1.5 pt-1">
-              <div className="flex items-center gap-1.5">
+
+            <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+              <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5">
                 <button
                   onClick={() => handleExportPamphlet('4:5')}
                   disabled={isExporting !== null}
-                  className="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 text-[#1e4916] border border-slate-300 rounded text-xs font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 text-xs font-semibold rounded text-slate-700 hover:text-slate-900 hover:bg-white transition-all cursor-pointer disabled:opacity-50"
+                  title="Unduh pamflet format Feed Instagram (4:5)"
                 >
-                  <span>4:5 (Feed)</span>
+                  4:5 Feed
                 </button>
                 <button
                   onClick={() => handleExportPamphlet('9:16')}
                   disabled={isExporting !== null}
-                  className="flex-1 py-1.5 px-2 bg-[#1e4916] hover:bg-[#15340f] text-white rounded text-xs font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs"
+                  className="px-2.5 py-1 text-xs font-semibold rounded bg-[#1e4916] text-white hover:bg-[#15340f] transition-all cursor-pointer shadow-2xs disabled:opacity-50"
+                  title="Unduh pamflet format Story / Status (9:16)"
                 >
-                  <span>9:16 (Story)</span>
+                  9:16 Story
                 </button>
               </div>
+
               <button
                 onClick={() => {
                   setStudioInitialSlide('cover');
                   setIsStudioOpen(true);
                 }}
-                className="w-full py-0.5 text-[11px] font-semibold text-[#1e4916] hover:underline flex items-center justify-center gap-1 cursor-pointer"
+                className="px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-medium transition-colors cursor-pointer flex items-center gap-1"
+                title="Sesuaikan foto latar atau tata letak di Studio Pamflet"
               >
-                <Sliders className="w-3 h-3" /> Ganti Background / Preview
+                <Sliders className="w-3 h-3 text-slate-500" />
+                <span className="hidden md:inline">Kustomisasi</span>
               </button>
             </div>
           </div>
 
-          {/* Card Export Itinerary Poster */}
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2 flex flex-col justify-between">
-            <div className="space-y-1">
-              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5 text-[#1e4916]" />
-                Export Rundown Itinerary (Poster)
-              </span>
-              <p className="text-[11px] text-slate-600 leading-snug">
-                Menyesuaikan desain resmi Cito Adventure: kartu transparan, rundown per hari & jam timeline.
-              </p>
+          {/* Row 2: Poster Rundown Itinerary */}
+          <div className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-0.5 min-w-0">
+              <div className="flex items-center gap-2.5">
+                <span className="w-7 h-7 rounded-lg bg-emerald-50 text-[#1e4916] border border-emerald-200/60 flex items-center justify-center shrink-0">
+                  <FileText className="w-3.5 h-3.5" />
+                </span>
+                <div>
+                  <h4 className="font-bold text-slate-900 font-['Montserrat'] text-xs sm:text-sm">
+                    Poster Rundown Itinerary
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    Timeline rundown harian, kartu transparan, jam aktivitas pendakian, & kontak.
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="space-y-1.5 pt-1">
-              <div className="flex items-center gap-1.5">
+
+            <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+              <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5">
                 <button
                   onClick={() => handleExportItineraryPoster('4:5')}
                   disabled={isExporting !== null}
-                  className="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 text-[#1e4916] border border-slate-300 rounded text-xs font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 text-xs font-semibold rounded text-slate-700 hover:text-slate-900 hover:bg-white transition-all cursor-pointer disabled:opacity-50"
+                  title="Unduh poster rundown format Feed (4:5)"
                 >
-                  <span>4:5 (Feed)</span>
+                  4:5 Feed
                 </button>
                 <button
                   onClick={() => handleExportItineraryPoster('9:16')}
                   disabled={isExporting !== null}
-                  className="flex-1 py-1.5 px-2 bg-[#1e4916] hover:bg-[#15340f] text-white rounded text-xs font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs"
+                  className="px-2.5 py-1 text-xs font-semibold rounded bg-[#1e4916] text-white hover:bg-[#15340f] transition-all cursor-pointer shadow-2xs disabled:opacity-50"
+                  title="Unduh poster rundown format Story (9:16)"
                 >
-                  <span>9:16 (Story)</span>
+                  9:16 Story
                 </button>
               </div>
+
               <button
                 onClick={() => {
                   setStudioInitialSlide('itinerary');
                   setIsStudioOpen(true);
                 }}
-                className="w-full py-0.5 text-[11px] font-semibold text-[#1e4916] hover:underline flex items-center justify-center gap-1 cursor-pointer"
+                className="px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-medium transition-colors cursor-pointer flex items-center gap-1"
+                title="Buka slide itinerary di Studio Pamflet"
               >
-                <Layers className="w-3 h-3" /> Buka di Studio Pamflet
+                <Layers className="w-3 h-3 text-slate-500" />
+                <span className="hidden md:inline">Kustomisasi</span>
               </button>
             </div>
           </div>
 
-          {/* Card Export Dokumen PDF & TXT */}
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2 sm:col-span-2 lg:col-span-1 flex flex-col justify-between">
-            <div className="space-y-1">
-              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                <Download className="w-3.5 h-3.5 text-[#1e4916]" />
-                Dokumen Arsip Cetak
-              </span>
-              <p className="text-[11px] text-slate-600 leading-snug">
-                Simpan seluruh data ke dokumen PDF resmi atau file teks (.TXT).
-              </p>
+          {/* Row 3: Dokumen Arsip PDF & TXT */}
+          <div className="py-3 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-0.5 min-w-0">
+              <div className="flex items-center gap-2.5">
+                <span className="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 flex items-center justify-center shrink-0">
+                  <Download className="w-3.5 h-3.5" />
+                </span>
+                <div>
+                  <h4 className="font-bold text-slate-900 font-['Montserrat'] text-xs sm:text-sm">
+                    Dokumen Arsip Cetak & Catatan
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    Berkas operasional lengkap dalam dokumen PDF resmi dan salinan teks (.TXT).
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5 pt-1">
+
+            <div className="flex items-center gap-1.5 shrink-0 self-start sm:self-center">
               <button
                 onClick={handleExportPDF}
-                className="flex-1 py-1.5 px-2 bg-[#1e4916] hover:bg-[#15340f] text-white border border-[#1e4916] rounded text-xs font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs"
+                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold border border-slate-300 transition-colors flex items-center gap-1.5 cursor-pointer"
               >
+                <Download className="w-3 h-3 text-slate-600" />
                 <span>Unduh PDF</span>
               </button>
               <button
                 onClick={handleExportTXT}
-                className="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded text-xs font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold border border-slate-300 transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Unduh TXT</span>
               </button>
@@ -516,10 +551,10 @@ export const TripDetail: React.FC<TripDetailProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setIsCaptionStudioOpen(true)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-semibold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs font-semibold transition-colors cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
               <span>Studio Caption</span>
@@ -535,7 +570,7 @@ export const TripDetail: React.FC<TripDetailProps> = ({
 
             <button
               onClick={handleOpenWhatsApp}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
               title="Buka WhatsApp langsung dengan teks ini"
             >
               <ExternalLink className="w-3.5 h-3.5 text-white" />
@@ -544,26 +579,26 @@ export const TripDetail: React.FC<TripDetailProps> = ({
           </div>
         </div>
 
-        {/* Tab switch */}
-        <div className="flex items-center gap-1.5 border-b border-slate-100 pb-2 overflow-x-auto">
+        {/* Segmented Tab Switch */}
+        <div className="inline-flex p-1 rounded-lg bg-slate-100 border border-slate-200/80 gap-1 overflow-x-auto max-w-full">
           <button
             onClick={() => setActiveCaptionTab('instagram')}
-            className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
               activeCaptionTab === 'instagram'
-                ? 'bg-[#1e4916] text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-white text-slate-900 shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Instagram className="w-3.5 h-3.5" />
+            <Instagram className="w-3.5 h-3.5 text-rose-600" />
             <span>Feed & Reels</span>
           </button>
 
           <button
             onClick={() => setActiveCaptionTab('whatsapp')}
-            className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
               activeCaptionTab === 'whatsapp'
-                ? 'bg-[#1e4916] text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-white text-slate-900 shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
@@ -572,10 +607,10 @@ export const TripDetail: React.FC<TripDetailProps> = ({
 
           <button
             onClick={() => setActiveCaptionTab('story')}
-            className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
               activeCaptionTab === 'story'
-                ? 'bg-[#1e4916] text-white shadow-xs'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-white text-slate-900 shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Zap className="w-3.5 h-3.5 text-amber-500" />

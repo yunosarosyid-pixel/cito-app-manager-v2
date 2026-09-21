@@ -36,8 +36,8 @@ export const TripCard: React.FC<TripCardProps> = ({
       onClick={() => onSelect(trip)}
       className={`group relative rounded-xl p-3 sm:p-3.5 transition-all duration-150 cursor-pointer border ${
         isSelected
-          ? 'bg-white border-slate-300 border-l-4 border-l-[#1e4916] shadow-sm'
-          : 'bg-white/80 hover:bg-white border-slate-200 hover:border-slate-300'
+          ? 'bg-white border-[#1e4916] ring-1 ring-[#1e4916]/20 shadow-xs'
+          : 'bg-white hover:bg-slate-50/80 border-slate-200 hover:border-slate-300'
       }`}
     >
       {/* Top Row: Mountain Name & Badges */}

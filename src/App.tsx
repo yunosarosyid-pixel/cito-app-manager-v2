@@ -665,7 +665,7 @@ export default function App() {
         )}
 
         {/* Mobile Navigation Pills */}
-        <div className="flex md:hidden items-center justify-between gap-1 mb-3 bg-white p-1 rounded-lg border border-slate-200 shadow-2xs">
+        <div className="flex md:hidden items-center justify-between gap-1 mb-3 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
           <button
             onClick={() => {
               setMobileTab('list');
@@ -675,7 +675,7 @@ export default function App() {
                 window.history.replaceState({}, '', url.toString());
               }
             }}
-            className={`flex-1 py-1.5 rounded text-xs font-bold transition-all ${
+            className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               mobileTab === 'list'
                 ? 'bg-[#1e4916] text-white shadow-xs'
                 : 'text-slate-600 hover:bg-slate-100'
@@ -690,7 +690,7 @@ export default function App() {
               }
             }}
             disabled={!activeTrip}
-            className={`flex-1 py-1.5 rounded text-xs font-bold transition-all ${
+            className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               mobileTab === 'detail'
                 ? 'bg-[#1e4916] text-white shadow-xs'
                 : 'text-slate-600 hover:bg-slate-100 disabled:opacity-40'
@@ -839,7 +839,7 @@ export default function App() {
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-1">
                     <button
                       onClick={handleOpenAddModal}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#1e4916] text-white text-xs font-semibold hover:bg-[#15340f] transition-colors cursor-pointer shadow-xs"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e4916] text-white text-xs font-semibold hover:bg-[#15340f] transition-colors cursor-pointer shadow-xs"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Buat Trip Baru</span>
@@ -847,7 +847,7 @@ export default function App() {
                     {trips.length === 0 && (
                       <button
                         onClick={handleRestoreDefaultTrips}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-300 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-300 transition-colors cursor-pointer"
                       >
                         <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
                         <span>Muat Contoh Trip</span>

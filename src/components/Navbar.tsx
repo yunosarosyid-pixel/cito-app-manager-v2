@@ -165,7 +165,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={onOpenCloudSync}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-semibold border transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
               cloudStatus === 'synced'
                 ? 'bg-emerald-950/60 hover:bg-emerald-900/70 text-emerald-300 border-emerald-500/40'
                 : cloudStatus === 'syncing'
@@ -209,7 +209,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={onScrollToDrafts}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-bold bg-amber-400 hover:bg-amber-300 text-amber-950 shadow-xs cursor-pointer transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-400 hover:bg-amber-300 text-amber-950 shadow-xs cursor-pointer transition-colors"
               title={`${draftCount} Draf jadwal baru dari tim lapangan menunggu persetujuan`}
             >
               <Bell className="w-3.5 h-3.5 fill-amber-950" />
@@ -222,7 +222,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={onScrollToAdminDrafts}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs cursor-pointer transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs cursor-pointer transition-colors"
               title={`${adminDraftCount} Trip buatan saya masih berstatus Draft`}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
@@ -235,7 +235,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={onOpenTeamMode}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/25 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/25 transition-colors cursor-pointer"
               title="Buka Lembar Kerja Formulir Input Tim Lapangan"
             >
               <Users className="w-3.5 h-3.5 text-emerald-300" />
@@ -247,7 +247,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={onCopyTeamLink}
-              className="hidden lg:inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold bg-white/10 hover:bg-white/20 text-amber-200 border border-amber-400/30 transition-colors cursor-pointer"
+              className="hidden lg:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-amber-200 border border-amber-400/30 transition-colors cursor-pointer"
               title="Salin Link Khusus untuk Tim Penginput Jadwal (?mode=tim)"
             >
               <Link2 className="w-3.5 h-3.5 text-amber-300" />
@@ -260,7 +260,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               id="team-data-btn"
               type="button"
               onClick={onOpenTeamData}
-              className="hidden xl:inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors cursor-pointer"
+              className="hidden xl:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors cursor-pointer"
               title="Kelola Nomor Admin & Data Anggota Tim"
             >
               <Users className="w-3.5 h-3.5 text-white/90" />
@@ -272,7 +272,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={onCopyAdminKeyLink}
-              className="hidden xl:inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold bg-white/10 hover:bg-white/20 text-emerald-200 border border-emerald-400/30 transition-colors cursor-pointer"
+              className="hidden xl:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-emerald-200 border border-emerald-400/30 transition-colors cursor-pointer"
               title="Salin Link Kunci Rahasia Pemilik Mas Yuno"
             >
               <Key className="w-3.5 h-3.5 text-emerald-300" />
@@ -284,7 +284,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={onLockToTeamMode}
-              className="inline-flex items-center gap-1 px-2 py-1.5 rounded text-xs font-semibold bg-black/25 hover:bg-black/35 text-white/80 border border-white/15 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold bg-black/25 hover:bg-black/35 text-white/80 border border-white/15 transition-colors cursor-pointer"
               title="Kunci perangkat ini kembali ke Mode Tim Lapangan"
             >
               <Lock className="w-3.5 h-3.5 text-amber-300" />
@@ -295,7 +295,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             id="download-zip-btn"
             onClick={downloadProjectZip}
-            className="hidden 2xl:inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors cursor-pointer"
+            className="hidden 2xl:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors cursor-pointer"
             title="Download seluruh source code aplikasi dalam format .ZIP"
           >
             <DownloadCloud className="w-3.5 h-3.5 text-white/90" />
@@ -305,7 +305,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             id="github-guide-btn"
             onClick={onOpenGithubGuide}
-            className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors cursor-pointer"
+            className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors cursor-pointer"
             title="Panduan push ke Repository GitHub"
           >
             <Github className="w-3.5 h-3.5 text-white/90" />
@@ -315,7 +315,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             id="add-trip-btn"
             onClick={onOpenAddModal}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded text-xs sm:text-sm font-bold bg-white hover:bg-slate-100 text-[#1b4313] transition-colors shadow-xs cursor-pointer"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-white hover:bg-slate-100 text-[#1b4313] transition-colors shadow-xs cursor-pointer"
           >
             <Plus className="w-4 h-4 text-[#1b4313]" />
             <span>Tambah Trip</span>
