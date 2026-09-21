@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Calendar,
   Clock,
@@ -149,8 +150,16 @@ export const TripDetail: React.FC<TripDetailProps> = ({
   };
 
   return (
-    <div key={trip.id} className="space-y-4">
-      {/* Top Banner & Heading */}
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={trip.id}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+        className="space-y-4"
+      >
+        {/* Top Banner & Heading */}
       <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
           <div className="space-y-1.5 min-w-0">
@@ -814,6 +823,7 @@ export const TripDetail: React.FC<TripDetailProps> = ({
           initialMode={activeCaptionTab}
         />
       )}
-    </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
