@@ -48,20 +48,20 @@ export const ItineraryModal: React.FC<ItineraryModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white border-2 border-[#275d1d] text-gray-900 w-full max-w-4xl rounded-xl shadow-2xl overflow-hidden my-4 sm:my-8 animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-white border border-slate-200 text-slate-900 w-full max-w-4xl rounded-xl shadow-xl overflow-hidden my-4 sm:my-8 animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="bg-[#275d1d] px-5 sm:px-6 py-4 border-b border-[#275d1d] flex items-center justify-between">
+        <div className="bg-[#0f172a] px-5 sm:px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div>
-            <span className="text-[10px] sm:text-xs font-bold tracking-wider text-[#d1d1d1] uppercase font-['Montserrat']">
+            <span className="text-[10px] sm:text-xs font-bold tracking-wider text-emerald-400 uppercase font-['Montserrat']">
               Rundown & Arsip Media Sosial
             </span>
-            <h2 className="text-lg sm:text-xl font-extrabold font-['Montserrat'] tracking-tight text-white">
+            <h2 className="text-base sm:text-lg font-bold font-['Montserrat'] tracking-tight text-white">
               🗓️ Itinerary {trip.nama_gunung} ({trip.jalur})
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="text-white hover:bg-black/20 p-1.5 rounded-md transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -80,13 +80,13 @@ export const ItineraryModal: React.FC<ItineraryModalProps> = ({
           />
 
           {/* Export Action Bar specifically for Itinerary */}
-          <div className="bg-[#f5f5f5] border-2 border-[#275d1d]/30 rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h4 className="font-extrabold text-[#275d1d] text-xs sm:text-sm flex items-center gap-1.5 font-['Montserrat'] tracking-tight">
-                <Image className="w-4 h-4 text-[#275d1d]" />
+              <h4 className="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5 font-['Montserrat'] tracking-tight">
+                <Image className="w-4 h-4 text-[#1e4916]" />
                 Export Poster Pamflet Itinerary
               </h4>
-              <p className="text-[11px] text-gray-700 mt-0.5">
+              <p className="text-[11px] text-slate-600 mt-0.5">
                 Pilih format rasio postingan untuk Instagram Feed atau Instagram Story
               </p>
             </div>
@@ -95,7 +95,7 @@ export const ItineraryModal: React.FC<ItineraryModalProps> = ({
               <button
                 onClick={() => handleExportPNG('4:5')}
                 disabled={isExporting !== null}
-                className="flex-1 sm:flex-none px-3.5 py-2 rounded text-xs font-bold bg-white hover:bg-[#e4e4e4] text-[#275d1d] border-2 border-[#275d1d] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>PNG (4:5 Feed)</span>
@@ -104,7 +104,7 @@ export const ItineraryModal: React.FC<ItineraryModalProps> = ({
               <button
                 onClick={() => handleExportPNG('9:16')}
                 disabled={isExporting !== null}
-                className="flex-1 sm:flex-none px-3.5 py-2 rounded text-xs font-bold bg-[#275d1d] hover:bg-[#1f4a17] text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow active:scale-95"
+                className="flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#1e4916] hover:bg-[#15340f] text-white transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>PNG (9:16 Story)</span>
@@ -114,16 +114,16 @@ export const ItineraryModal: React.FC<ItineraryModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="bg-[#f5f5f5] px-5 sm:px-6 py-3 border-t border-[#275d1d]/20 flex items-center justify-end gap-2.5">
+        <div className="bg-slate-50 px-5 sm:px-6 py-3 border-t border-slate-200 flex items-center justify-end gap-2.5">
           <button
             onClick={onClose}
-            className="px-4 py-1.5 text-xs sm:text-sm font-bold text-gray-700 hover:text-gray-900 bg-[#d1d1d1] hover:bg-[#c2c2c2] rounded transition-colors cursor-pointer"
+            className="px-4 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-900 bg-slate-200 hover:bg-slate-300 rounded-lg transition-colors cursor-pointer"
           >
             Tutup
           </button>
           <button
             onClick={handleSave}
-            className="px-5 py-1.5 text-xs sm:text-sm font-bold text-white bg-[#275d1d] hover:bg-[#1f4a17] rounded transition-all cursor-pointer shadow"
+            className="px-5 py-1.5 text-xs sm:text-sm font-bold text-white bg-[#1e4916] hover:bg-[#15340f] rounded-lg transition-colors cursor-pointer shadow-xs"
           >
             Simpan Perubahan
           </button>

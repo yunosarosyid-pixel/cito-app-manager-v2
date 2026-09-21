@@ -34,79 +34,73 @@ export const TripCard: React.FC<TripCardProps> = ({
   return (
     <div
       onClick={() => onSelect(trip)}
-      className={`group relative rounded-2xl p-3.5 sm:p-4 transition-all duration-200 cursor-pointer ${
+      className={`group relative rounded-xl p-3 sm:p-3.5 transition-all duration-150 cursor-pointer border ${
         isSelected
-          ? 'bg-white border-2 border-[#275d1d] shadow-md ring-1 ring-[#275d1d]/30 scale-[1.01]'
-          : 'bg-white/95 border border-slate-300 hover:border-slate-400 hover:bg-white shadow-2xs hover:shadow-xs opacity-70 hover:opacity-100'
+          ? 'bg-white border-slate-300 border-l-4 border-l-[#1e4916] shadow-sm'
+          : 'bg-white/80 hover:bg-white border-slate-200 hover:border-slate-300'
       }`}
     >
-      {/* Row 1: Mountain Name & Height + Dari Tim Badge + Draft/Final Badge + Chevron Icon */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-          <h3
-            className={`text-sm sm:text-base font-['Montserrat'] truncate transition-colors ${
-              isSelected
-                ? 'text-[#1f4a17] font-extrabold tracking-tight'
-                : 'text-slate-500 font-semibold group-hover:text-slate-700'
-            }`}
-          >
-            {formatTitle()}
-          </h3>
+      {/* Top Row: Mountain Name & Badges */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <h3
+              className={`text-sm font-['Montserrat'] truncate transition-colors ${
+                isSelected
+                  ? 'text-[#1e4916] font-bold tracking-tight'
+                  : 'text-slate-800 font-semibold group-hover:text-slate-900'
+              }`}
+            >
+              {formatTitle()}
+            </h3>
 
-          {/* Badge Sumber Pembuat: Dari Tim vs Dari Admin */}
-          {trip.from_team ? (
-            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-500 text-white shadow-2xs shrink-0">
-              👥 Dari Tim
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#275d1d] text-white shadow-2xs shrink-0">
-              👑 Dari Admin
-            </span>
-          )}
+            {/* Badges */}
+            <div className="flex items-center gap-1 shrink-0">
+              {trip.is_draft ? (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                  DRAFT
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  FINAL
+                </span>
+              )}
 
-          {/* Badge Status: Draft (Merah Tegas) vs Final (Hijau) */}
-          {trip.is_draft ? (
-            <span className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full bg-red-100 text-red-900 border border-red-500 shadow-2xs shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
-              🔴 Draft
+              {trip.from_team ? (
+                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
+                  TIM
+                </span>
+              ) : (
+                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 shrink-0">
+                  ADMIN
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Sub Row: Jalur & Date */}
+          <div className="mt-1.5 flex items-center gap-2 text-xs text-slate-600 flex-wrap">
+            <span className="font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-[11px] shrink-0">
+              {jalurText}
             </span>
-          ) : (
-            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-400 shadow-2xs shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-              🟢 Final
-            </span>
-          )}
+
+            {formattedDate && (
+              <span className="font-['Montserrat'] text-[11px] font-medium text-slate-600">
+                {formattedDate}
+              </span>
+            )}
+          </div>
         </div>
+
         <ChevronRight
-          className={`w-5 h-5 transition-all shrink-0 ${
+          className={`w-4 h-4 transition-all shrink-0 mt-0.5 ${
             isSelected
-              ? 'text-[#275d1d] translate-x-1 font-bold'
-              : 'text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5'
+              ? 'text-[#1e4916] translate-x-0.5'
+              : 'text-slate-300 group-hover:text-slate-500'
           }`}
         />
-      </div>
-
-      {/* Row 2: Jalur Pill Badge & Tanggal Trip */}
-      <div className="mt-2.5 flex items-center gap-2.5 flex-wrap">
-        <span
-          className={`inline-flex items-center text-xs font-semibold px-3 py-1 rounded-full transition-colors shrink-0 ${
-            isSelected
-              ? 'bg-[#1f4a17] text-white shadow-xs'
-              : 'bg-slate-300/80 text-slate-600 group-hover:bg-slate-300 group-hover:text-slate-700'
-          }`}
-        >
-          {jalurText}
-        </span>
-
-        {formattedDate && (
-          <span
-            className={`text-xs sm:text-[13px] font-medium font-['Montserrat'] transition-colors ${
-              isSelected ? 'text-[#1f4a17] font-bold' : 'text-slate-600 group-hover:text-slate-800'
-            }`}
-          >
-            {formattedDate}
-          </span>
-        )}
       </div>
     </div>
   );

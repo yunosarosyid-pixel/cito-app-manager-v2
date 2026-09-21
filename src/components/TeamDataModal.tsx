@@ -136,20 +136,20 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white border-2 border-[#275d1d] text-gray-900 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden my-6 animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+      <div className="bg-white border border-slate-200 text-slate-900 w-full max-w-2xl rounded-xl shadow-xl overflow-hidden my-6 animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
         {/* Modal Header */}
-        <div className="bg-[#275d1d] px-5 sm:px-6 py-4 flex items-center justify-between border-b border-[#1f4a17] text-white shrink-0">
+        <div className="bg-[#0f172a] px-5 sm:px-6 py-4 flex items-center justify-between border-b border-slate-800 text-white shrink-0">
           <div>
-            <span className="text-[10px] sm:text-xs font-bold tracking-widest text-emerald-200 uppercase font-['Space_Grotesk']">
+            <span className="text-[10px] sm:text-xs font-bold tracking-wider text-emerald-400 uppercase font-['Montserrat']">
               Manajemen Tim & Admin Cito
             </span>
-            <h2 className="text-lg sm:text-xl font-extrabold font-['Space_Grotesk']">
+            <h2 className="text-base sm:text-lg font-bold font-['Montserrat']">
               Data Tim
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             title="Tutup"
           >
             <X className="w-5 h-5" />
@@ -159,31 +159,31 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
         {/* Modal Body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-6">
           {/* SECTION A: NOMOR ADMIN */}
-          <div className="bg-[#f5f5f5] p-4 sm:p-5 rounded-xl border-2 border-[#275d1d]/30 space-y-3">
+          <div className="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-200 space-y-3">
             <div className="flex items-center justify-between gap-2 flex-wrap">
-              <h3 className="text-xs sm:text-sm font-extrabold text-[#275d1d] tracking-wider uppercase font-['Space_Grotesk'] flex items-center gap-2">
-                <Shield className="w-4 h-4 text-[#275d1d]" />
+              <h3 className="text-xs sm:text-sm font-bold text-slate-800 tracking-wider uppercase font-['Montserrat'] flex items-center gap-2">
+                <Shield className="w-4 h-4 text-[#1e4916]" />
                 Nomor Admin
               </h3>
-              <span className="text-[11px] text-gray-600">
+              <span className="text-[11px] text-slate-500">
                 Penerima notifikasi WhatsApp saat tim selesai input trip
               </span>
             </div>
 
             <form onSubmit={handleSaveAdminPhone} className="flex flex-col sm:flex-row items-center gap-2">
               <div className="relative flex-1 w-full">
-                <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={adminPhone}
                   onChange={(e) => setAdminPhone(e.target.value)}
                   placeholder="+6282230444428 atau 08123456789"
-                  className="w-full bg-white border border-[#275d1d]/40 rounded-lg pl-9 pr-3 py-2 text-xs sm:text-sm font-bold text-gray-900 focus:border-[#275d1d] focus:outline-none"
+                  className="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-xs sm:text-sm font-semibold text-slate-900 focus:border-[#1e4916] focus:outline-none"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#275d1d] hover:bg-[#1f4a17] text-white text-xs font-bold rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#1e4916] hover:bg-[#15340f] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer shrink-0"
               >
                 {adminSaved ? (
                   <>
@@ -204,11 +204,11 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-2">
               <div>
-                <h3 className="text-xs sm:text-sm font-extrabold text-[#275d1d] tracking-wider uppercase font-['Space_Grotesk'] flex items-center gap-2">
-                  <User className="w-4 h-4 text-[#275d1d]" />
+                <h3 className="text-xs sm:text-sm font-bold text-slate-800 tracking-wider uppercase font-['Montserrat'] flex items-center gap-2">
+                  <User className="w-4 h-4 text-[#1e4916]" />
                   Daftar Anggota Tim Cito
                 </h3>
-                <p className="text-[11px] text-gray-600">
+                <p className="text-[11px] text-slate-500">
                   Kru lapangan: Guide, Porter, Kameramen, dll.
                 </p>
               </div>
@@ -217,7 +217,7 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
                 <button
                   type="button"
                   onClick={handleStartAdd}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#275d1d] hover:bg-[#1f4a17] text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1e4916] hover:bg-[#15340f] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Tambah Anggota</span>
@@ -229,15 +229,15 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
             {(isAdding || editingId) && (
               <form
                 onSubmit={handleSaveMember}
-                className="bg-emerald-50/50 border-2 border-[#275d1d] rounded-xl p-4 space-y-3 animate-in fade-in duration-200"
+                className="bg-emerald-50/40 border border-emerald-300 rounded-xl p-4 space-y-3 animate-in fade-in duration-200"
               >
-                <div className="text-xs font-bold text-[#275d1d] font-['Space_Grotesk']">
+                <div className="text-xs font-bold text-emerald-950 font-['Montserrat']">
                   {editingId ? 'Edit Data Anggota Tim' : '+ Tambah Anggota Tim Baru'}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-gray-800 mb-1">
+                    <label className="block text-xs font-semibold text-slate-800 mb-1">
                       Status / Peran:
                     </label>
                     <input
@@ -245,12 +245,12 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
                       value={statusInput}
                       onChange={(e) => setStatusInput(e.target.value)}
                       placeholder="Guide, Porter, Kameramen, Leader, Sweeper"
-                      className="w-full bg-white border border-[#275d1d]/40 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-bold text-gray-900 focus:outline-none focus:border-[#275d1d]"
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#1e4916]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-800 mb-1">
+                    <label className="block text-xs font-semibold text-slate-800 mb-1">
                       Nama Anggota:
                     </label>
                     <input
@@ -258,12 +258,13 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
                       value={namaInput}
                       onChange={(e) => setNamaInput(e.target.value)}
                       placeholder="Nama lengkap atau panggilan"
-                      className="w-full bg-white border border-[#275d1d]/40 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-bold text-gray-900 focus:outline-none focus:border-[#275d1d]"
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-[#1e4916]"
+                      required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-800 mb-1">
+                    <label className="block text-xs font-semibold text-slate-800 mb-1">
                       No. WhatsApp:
                     </label>
                     <input
@@ -271,12 +272,12 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
                       value={noWaInput}
                       onChange={(e) => setNoWaInput(e.target.value)}
                       placeholder="+628... atau 08..."
-                      className="w-full bg-white border border-[#275d1d]/40 rounded-lg px-3 py-1.5 text-xs sm:text-sm text-gray-900 focus:outline-none focus:border-[#275d1d]"
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-[#1e4916]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-800 mb-1">
+                    <label className="block text-xs font-semibold text-slate-800 mb-1">
                       Instagram:
                     </label>
                     <input
@@ -284,22 +285,22 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
                       value={igInput}
                       onChange={(e) => setIgInput(e.target.value)}
                       placeholder="@username"
-                      className="w-full bg-white border border-[#275d1d]/40 rounded-lg px-3 py-1.5 text-xs sm:text-sm text-gray-900 focus:outline-none focus:border-[#275d1d]"
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-[#1e4916]"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-1">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-emerald-200">
                   <button
                     type="button"
                     onClick={handleCancelForm}
-                    className="px-3 py-1.5 rounded-lg border border-gray-300 text-xs font-semibold text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-1.5 rounded-lg bg-[#275d1d] hover:bg-[#1f4a17] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                    className="px-4 py-1.5 rounded-lg bg-[#1e4916] hover:bg-[#15340f] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
                   >
                     Simpan Data
                   </button>
@@ -308,44 +309,44 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
             )}
 
             {/* List Anggota Tim */}
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {members.length > 0 ? (
                 members.map((m) => (
                   <div
                     key={m.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-white border border-[#275d1d]/30 hover:border-[#275d1d] transition-all shadow-xs"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-white border border-slate-200 hover:border-slate-300 transition-all shadow-xs"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-[#275d1d] text-white">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-900 text-emerald-400">
                           {m.status}
                         </span>
-                        <span className="text-sm font-extrabold text-gray-900 font-['Space_Grotesk']">
+                        <span className="text-sm font-bold text-slate-900 font-['Montserrat']">
                           {m.nama}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-3 text-xs text-gray-600 flex-wrap">
+                      <div className="flex items-center gap-3 text-xs text-slate-600 flex-wrap">
                         {m.no_wa && (
                           <span className="flex items-center gap-1 font-medium">
-                            <Phone className="w-3 h-3 text-[#275d1d]" />
+                            <Phone className="w-3 h-3 text-[#1e4916]" />
                             {m.no_wa}
                           </span>
                         )}
                         {m.instagram && (
                           <span className="flex items-center gap-1 font-medium">
-                            <Instagram className="w-3 h-3 text-pink-600" />
+                            <Instagram className="w-3 h-3 text-rose-600" />
                             {m.instagram}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5 self-end sm:self-center">
+                    <div className="flex items-center gap-1 self-end sm:self-center">
                       <button
                         type="button"
                         onClick={() => handleStartEdit(m)}
-                        className="p-1.5 rounded-lg text-[#275d1d] hover:bg-emerald-50 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
                         title="Edit data anggota"
                       >
                         <Edit2 className="w-4 h-4" />
@@ -353,7 +354,7 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
                       <button
                         type="button"
                         onClick={() => handleDeleteMember(m.id)}
-                        className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
                         title="Hapus anggota"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -362,7 +363,7 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
                   </div>
                 ))
               ) : (
-                <div className="text-center py-6 text-xs text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                <div className="text-center py-6 text-xs text-slate-500 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                   Belum ada data anggota tim. Klik <strong>"+ Tambah Anggota"</strong> di atas.
                 </div>
               )}
@@ -371,11 +372,11 @@ export const TeamDataModal: React.FC<TeamDataModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="bg-[#f5f5f5] px-5 py-3 border-t border-gray-200 flex items-center justify-end shrink-0">
+        <div className="bg-slate-50 px-5 py-3 border-t border-slate-200 flex items-center justify-end shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-bold transition-colors cursor-pointer"
+            className="px-4 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
           >
             Tutup
           </button>

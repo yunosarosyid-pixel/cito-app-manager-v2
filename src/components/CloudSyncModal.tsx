@@ -171,24 +171,24 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
     >
       <div
         id="cloud-sync-modal-card"
-        className="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col my-auto border border-gray-100 animate-in fade-in zoom-in-95 duration-150"
+        className="bg-white rounded-xl max-w-lg w-full shadow-xl overflow-hidden flex flex-col my-auto border border-slate-200 animate-in fade-in zoom-in-95 duration-150"
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#143811] to-[#275d1d] text-white p-4 sm:p-5 flex items-center justify-between">
+        <div className="bg-[#0f172a] text-white p-4 sm:p-5 flex items-center justify-between border-b border-slate-800">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white border border-white/20">
-              <Cloud className="w-5 h-5 text-emerald-300" />
+            <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-emerald-400 border border-white/10">
+              <Cloud className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold">Sinkronisasi Cloud (HP & Laptop)</h2>
-              <p className="text-[11px] text-emerald-100/90">
+              <h2 className="text-sm sm:text-base font-bold font-['Montserrat']">Sinkronisasi Cloud (HP & Laptop)</h2>
+              <p className="text-[11px] text-slate-400">
                 Penyimpanan online real-time Cito Adventure
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -202,8 +202,8 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
               cloudStatus === 'quota_exceeded'
                 ? 'bg-amber-50 border-amber-300'
                 : cloudStatus === 'offline'
-                ? 'bg-gray-50 border-gray-200'
-                : 'bg-emerald-50 border-emerald-200'
+                ? 'bg-slate-50 border-slate-200'
+                : 'bg-emerald-50/70 border-emerald-200'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -212,19 +212,19 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
                   cloudStatus === 'quota_exceeded'
                     ? 'bg-amber-500'
                     : cloudStatus === 'offline'
-                    ? 'bg-gray-400'
-                    : 'bg-emerald-500'
+                    ? 'bg-slate-400'
+                    : 'bg-emerald-600'
                 } animate-pulse`}
               />
               <div>
-                <p className="text-xs font-bold text-gray-900">
+                <p className="text-xs font-bold text-slate-900">
                   {cloudStatus === 'quota_exceeded'
                     ? 'Batas Kuota Cloud Harian (Cache Offline Aktif)'
                     : cloudStatus === 'offline'
                     ? 'Mode Offline Cache'
                     : 'Cloud Firestore Aktif'}
                 </p>
-                <p className="text-[11px] text-gray-600">
+                <p className="text-[11px] text-slate-500">
                   {currentTrips.length} trip tersimpan di IndexedDB & memori perangkat ini
                 </p>
               </div>
@@ -234,8 +234,8 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
                 cloudStatus === 'quota_exceeded'
                   ? 'bg-amber-200 text-amber-900'
                   : cloudStatus === 'offline'
-                  ? 'bg-gray-200 text-gray-700'
-                  : 'bg-emerald-200/80 text-emerald-900'
+                  ? 'bg-slate-200 text-slate-700'
+                  : 'bg-emerald-100 text-emerald-900'
               }`}
             >
               {cloudStatus === 'quota_exceeded' ? 'Quota Exceeded' : cloudStatus === 'offline' ? 'Offline' : 'Real-time'}
@@ -289,12 +289,12 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
             <button
               onClick={handleManualUpload}
               disabled={isUploading || isDownloading}
-              className="flex items-center justify-center gap-2 p-3 rounded-xl bg-[#275d1d] hover:bg-[#1f4a17] text-white text-xs font-bold transition-all shadow-sm cursor-pointer disabled:opacity-50"
+              className="flex items-center justify-center gap-2 p-2.5 rounded-lg bg-[#1e4916] hover:bg-[#15340f] text-white text-xs font-semibold transition-colors shadow-xs cursor-pointer disabled:opacity-50"
             >
               {isUploading ? (
                 <RefreshCw className="w-4 h-4 animate-spin" />
               ) : (
-                <UploadCloud className="w-4 h-4 text-emerald-200" />
+                <UploadCloud className="w-4 h-4 text-emerald-300" />
               )}
               <span>Unggah Data Ini ke Cloud</span>
             </button>
@@ -302,26 +302,26 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
             <button
               onClick={handleManualDownload}
               disabled={isDownloading || isUploading}
-              className="flex items-center justify-center gap-2 p-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold transition-all border border-gray-300 cursor-pointer disabled:opacity-50"
+              className="flex items-center justify-center gap-2 p-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors border border-slate-300 cursor-pointer disabled:opacity-50"
             >
               {isDownloading ? (
                 <RefreshCw className="w-4 h-4 animate-spin" />
               ) : (
-                <DownloadCloud className="w-4 h-4 text-gray-600" />
+                <DownloadCloud className="w-4 h-4 text-slate-600" />
               )}
               <span>Tarik Data Terbaru Cloud</span>
             </button>
           </div>
 
           {/* Quick Fix Button: Samakan Persis dengan Cloud */}
-          <div className="p-3 bg-red-50 border border-red-200 rounded-xl space-y-2">
+          <div className="p-3 bg-rose-50/70 border border-rose-200 rounded-xl space-y-2">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <p className="text-xs font-bold text-red-900 flex items-center gap-1.5">
-                  <RefreshCw className="w-3.5 h-3.5 text-red-600" />
+                <p className="text-xs font-bold text-rose-950 flex items-center gap-1.5">
+                  <RefreshCw className="w-3.5 h-3.5 text-rose-600" />
                   <span>Samakan Persis dengan Laptop / Cloud</span>
                 </p>
-                <p className="text-[11px] text-red-700/90 leading-tight mt-0.5">
+                <p className="text-[11px] text-rose-800/90 leading-tight mt-0.5">
                   Jika di HP muncul trip dummy/sampel berlebih, klik tombol ini untuk membersihkan cache HP dan mengambil murni data trip asli dari Cloud.
                 </p>
               </div>
@@ -329,7 +329,7 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
             <button
               onClick={handleResetAndFetchPureCloud}
               disabled={isDownloading || isUploading}
-              className="w-full py-2 px-3 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+              className="w-full py-2 px-3 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition-colors shadow-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isDownloading ? 'animate-spin' : ''}`} />
               <span>Bersihkan Cache & Samakan Persis dengan Cloud</span>
@@ -356,18 +356,18 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
           </div>
 
           {/* QR Code Section to Open on Phone */}
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center space-y-3">
-            <div className="flex items-center justify-center gap-2 text-xs font-bold text-gray-800">
-              <Smartphone className="w-4 h-4 text-[#275d1d]" />
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center space-y-3">
+            <div className="flex items-center justify-center gap-2 text-xs font-bold text-slate-800 font-['Montserrat']">
+              <Smartphone className="w-4 h-4 text-[#1e4916]" />
               <span>Buka Langsung di HP Anda (Akses Admin Mas Yuno)</span>
             </div>
-            <p className="text-[11px] text-gray-600 max-w-sm mx-auto leading-relaxed">
+            <p className="text-[11px] text-slate-600 max-w-sm mx-auto leading-relaxed">
               Scan barcode di bawah dengan kamera HP pribadi Mas Yuno. Barcode ini otomatis menyertakan <strong>kunci akses admin</strong> sehingga HP Mas Yuno langsung terbuka sebagai Admin penuh:
             </p>
 
             <div className="flex justify-center">
               {qrCodeDataUrl ? (
-                <div className="p-2 bg-white rounded-xl shadow-xs border border-gray-200 inline-block">
+                <div className="p-2 bg-white rounded-xl shadow-xs border border-slate-200 inline-block">
                   <img
                     src={qrCodeDataUrl}
                     alt="QR Code Buka di HP Mas Yuno"
@@ -375,7 +375,7 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
                   />
                 </div>
               ) : (
-                <div className="w-36 h-36 bg-gray-200 animate-pulse rounded-xl mx-auto flex items-center justify-center text-xs text-gray-400">
+                <div className="w-36 h-36 bg-slate-200 animate-pulse rounded-xl mx-auto flex items-center justify-center text-xs text-slate-400">
                   Memuat QR...
                 </div>
               )}
@@ -387,11 +387,11 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
                 type="text"
                 readOnly
                 value={adminUrl}
-                className="flex-1 bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-[10px] text-gray-600 font-mono select-all truncate"
+                className="flex-1 bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-[10px] text-slate-600 font-mono select-all truncate"
               />
               <button
                 onClick={handleCopyLink}
-                className="flex items-center gap-1 bg-[#275d1d] hover:bg-[#1e4817] text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer shrink-0"
+                className="flex items-center gap-1 bg-[#1e4916] hover:bg-[#15340f] text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer shrink-0"
               >
                 {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? 'Tersalin' : 'Salin'}</span>
@@ -401,10 +401,10 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="bg-gray-50 p-3 sm:p-4 border-t border-gray-100 flex justify-end">
+        <div className="bg-slate-50 p-3 sm:p-4 border-t border-slate-200 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-bold transition-colors cursor-pointer"
+            className="px-4 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
           >
             Tutup
           </button>

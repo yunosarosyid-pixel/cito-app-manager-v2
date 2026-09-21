@@ -106,15 +106,13 @@ export default function App() {
   // Toast notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Mobile view toggle ('list' | 'detail'). SELALU mulai dari Daftar Trip saat
-  // halaman dimuat/refresh — apapun isi URL-nya. Sebelumnya ini sempat memeriksa
-  // apakah ada ?trip=xxx di URL dan langsung lompat ke 'detail', tapi karena
-  // setiap kali memilih trip URL SELALU diberi ?trip=xxx (untuk keperluan share
-  // link) dan parameter itu tidak pernah dihapus, hasilnya sama saja dengan bug
-  // lama: setiap refresh selalu jatuh ke tab Detail & Export. Klik trip di
-  // daftar tetap membawa ke tab detail seperti biasa (lewat handleSelectTrip);
-  // ini hanya mengubah kondisi AWAL saat halaman pertama kali dimuat.
-  const [mobileTab, setMobileTab] = useState<'list' | 'detail'>('list');
+  // Mobile view toggle ('list' | 'detail')
+  const [mobileTab, setMobileTab] = useState<'list' | 'detail'>(() => {
+    if (typeof window === 'undefined') return 'list';
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'detail' || params.get('trip')) return 'detail';
+    return 'list';
+  });
 
   // Sinkronisasi selectedTripId & mobileTab ke URL query params & localStorage agar tahan refresh di HP & PC
   const handleSelectTrip = useCallback((tripId: string, tab?: 'list' | 'detail') => {
@@ -126,29 +124,16 @@ export default function App() {
     const newTab = tab || 'detail';
     setMobileTab(newTab);
 
-    // Update URL tanpa reload halaman. Simpan trip id saja (untuk deep-link/
-    // share), TIDAK menyimpan tab, supaya refresh halaman selalu mulai dari
-    // Daftar Trip di mobile, bukan nyangkut di tab Detail & Export dari sesi
-    // sebelumnya (mis. setelah trip yang sedang dilihat dihapus).
+    // Update URL tanpa reload halaman
     if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
       const url = new URL(window.location.href);
       url.searchParams.set('trip', tripId);
-      url.searchParams.delete('tab');
+      url.searchParams.set('tab', newTab);
       window.history.replaceState({}, '', url.toString());
     }
   }, []);
 
   useEffect(() => {
-    // Bersihkan sisa parameter ?tab=detail dari URL sesi sebelumnya, supaya
-    // tampilan selalu mulai dari Daftar Trip saat halaman dibuka/refresh.
-    // Parameter ?trip=xxx tetap dipertahankan untuk deep-link ke trip tertentu.
-    if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
-      const url = new URL(window.location.href);
-      if (url.searchParams.has('tab')) {
-        url.searchParams.delete('tab');
-        window.history.replaceState({}, '', url.toString());
-      }
-    }
     // 1. Instant local read so app renders immediately without empty flash
     const localTrips = sortTripsByDepartureDate(getStoredTrips());
     setTrips(localTrips);
@@ -562,7 +547,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#d1d1d1] text-[#1a2e16] flex flex-col font-['Plus_Jakarta_Sans'] selection:bg-[#275d1d] selection:text-white">
+    <div className="min-h-screen bg-[#f4f6f8] text-[#0f172a] flex flex-col font-['Plus_Jakarta_Sans'] selection:bg-[#1e4916] selection:text-white">
       {/* Top App Navbar */}
       <Navbar
         onOpenAddModal={handleOpenAddModal}
@@ -599,44 +584,45 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 md:p-6 flex flex-col">
         {/* Banner Kuota Cloud Harian */}
         {cloudStatus === 'quota_exceeded' && (
-          <div className="mb-4 bg-amber-50 border-2 border-amber-400 rounded-2xl p-3.5 sm:p-4 shadow-sm flex items-center justify-between gap-3 flex-wrap animate-in slide-in-from-top-2 duration-300">
+          <div className="mb-4 bg-amber-50/90 border border-amber-300 rounded-xl p-3.5 sm:p-4 flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-                <Cloud className="w-5 h-5" />
+              <div className="w-9 h-9 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0">
+                <Cloud className="w-4 h-4" />
               </div>
               <div>
-                <div className="text-xs sm:text-sm font-extrabold text-amber-950 flex items-center gap-2">
-                  <span>ℹ️ Kuota Baca Cloud Gratis Hari Ini Tercapai (Mode Cache Offline Aktif)</span>
+                <div className="text-xs sm:text-sm font-bold text-amber-950 flex items-center gap-2">
+                  <span>Mode Offline Cloud Aktif (Kuota Harian Tercapai)</span>
                 </div>
                 <p className="text-[11px] text-amber-900 mt-0.5 max-w-2xl">
-                  Aplikasi beroperasi mulus menggunakan penyimpanan lokal (IndexedDB & memori). Seluruh data trip, poster pamflet, dan caption tetap aman & berfungsi normal. Kuota Cloud harian akan reset otomatis besok.
+                  Aplikasi beroperasi normal dengan penyimpanan lokal. Semua data trip, poster pamflet, dan caption tetap aman & berfungsi lancar.
                 </p>
               </div>
             </div>
             <button
               onClick={() => setIsCloudSyncOpen(true)}
-              className="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer"
+              className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
             >
               Info Kuota & Database
             </button>
           </div>
         )}
-        {/* Titik 2: Banner Notifikasi Cepat di Bagian Paling Atas Layar (Header Dashboard) Khusus Draf Tim */}
+
+        {/* Banner Notifikasi Masukan Draf Tim Lapangan */}
         {teamDraftTrips.length > 0 && !isDraftBannerDismissed && (
-          <div className="mb-4 bg-amber-50 border-2 border-amber-400 rounded-2xl p-3 sm:p-4 shadow-sm flex items-center justify-between gap-3 flex-wrap animate-in slide-in-from-top-2 duration-300">
+          <div className="mb-4 bg-amber-50 border border-amber-300 rounded-xl p-3 sm:p-3.5 flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-                <Bell className="w-5 h-5 animate-bounce" />
+              <div className="w-9 h-9 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0">
+                <Bell className="w-4 h-4" />
               </div>
               <div>
-                <div className="text-xs sm:text-sm font-extrabold text-amber-950 flex items-center gap-2 flex-wrap">
-                  <span>📥 Ada {teamDraftTrips.length} Jadwal Baru Masuk dari Tim!</span>
-                  <span className="text-[11px] font-bold text-amber-900 bg-amber-200 px-2.5 py-0.5 rounded-full">
+                <div className="text-xs sm:text-sm font-bold text-amber-950 flex items-center gap-2 flex-wrap">
+                  <span>Ada {teamDraftTrips.length} Jadwal Baru Masuk dari Tim</span>
+                  <span className="text-[11px] font-semibold text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded">
                     {teamDraftTrips[0].nama_gunung} ({teamDraftTrips[0].jalur})
                   </span>
                 </div>
                 <p className="text-[11px] text-amber-800 mt-0.5">
-                  Disusun oleh <strong>{teamDraftTrips[0].draf_oleh || 'Tim CITO'}</strong>. Periksa rincian data lalu klik Setujui untuk membuat pamflet & caption.
+                  Disusun oleh <strong>{teamDraftTrips[0].draf_oleh || 'Tim CITO'}</strong>. Periksa data lalu setujui untuk finalisasi pamflet.
                 </p>
               </div>
             </div>
@@ -647,9 +633,9 @@ export default function App() {
                   setSelectedTripId(teamDraftTrips[0].id);
                   setMobileTab('detail');
                 }}
-                className="px-3.5 py-2 bg-[#275d1d] hover:bg-[#1f4a17] text-white text-xs font-bold rounded-lg shadow-xs transition-all cursor-pointer"
+                className="px-3 py-1.5 bg-[#1e4916] hover:bg-[#163710] text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
               >
-                Lihat & Review
+                Review Data
               </button>
               <button
                 onClick={() => {
@@ -662,7 +648,7 @@ export default function App() {
                   handleSaveTrip(approved);
                   showToast(`Trip ${teamDraftTrips[0].nama_gunung} resmi disetujui & dipublikasikan!`);
                 }}
-                className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+                className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
               >
                 <CheckCircle className="w-3.5 h-3.5" />
                 <span>Setujui</span>
@@ -679,15 +665,20 @@ export default function App() {
         )}
 
         {/* Mobile Navigation Pills */}
-        <div className="flex md:hidden items-center justify-between gap-2 mb-4 bg-white p-1 rounded-lg border-2 border-[#275d1d]/30 shadow-xs">
+        <div className="flex md:hidden items-center justify-between gap-1 mb-3 bg-white p-1 rounded-lg border border-slate-200 shadow-2xs">
           <button
             onClick={() => {
               setMobileTab('list');
+              if (typeof window !== 'undefined' && window.history && window.history.replaceState) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('tab', 'list');
+                window.history.replaceState({}, '', url.toString());
+              }
             }}
             className={`flex-1 py-1.5 rounded text-xs font-bold transition-all ${
               mobileTab === 'list'
-                ? 'bg-[#275d1d] text-white shadow'
-                : 'text-[#275d1d] hover:bg-[#e4e4e4]'
+                ? 'bg-[#1e4916] text-white shadow-xs'
+                : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             Daftar Trip ({filteredTrips.length})
@@ -701,42 +692,42 @@ export default function App() {
             disabled={!activeTrip}
             className={`flex-1 py-1.5 rounded text-xs font-bold transition-all ${
               mobileTab === 'detail'
-                ? 'bg-[#275d1d] text-white shadow'
-                : 'text-[#275d1d] hover:bg-[#e4e4e4] disabled:opacity-40'
+                ? 'bg-[#1e4916] text-white shadow-xs'
+                : 'text-slate-600 hover:bg-slate-100 disabled:opacity-40'
             }`}
           >
-            Detail & Export
+            Detail & Operasional
           </button>
         </div>
 
         {/* 2-Column Responsive Workspace */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 flex-1 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-5 flex-1 items-start">
           {/* Left Column: Trip Directory & Filters */}
           <aside
-            className={`md:col-span-5 lg:col-span-4 space-y-3.5 ${
+            className={`md:col-span-5 lg:col-span-4 space-y-3 ${
               mobileTab === 'list' ? 'block' : 'hidden md:block'
             }`}
           >
-            {/* Search & Header Card matching Image 2 */}
-            <div className="bg-white border-2 border-[#275d1d] rounded-2xl p-4 shadow-sm space-y-3">
+            {/* Search & Header Card */}
+            <div className="bg-white border border-slate-200 rounded-xl p-3 sm:p-3.5 shadow-xs space-y-2.5">
               <div className="flex items-center justify-between">
-                <h2 className="text-base font-extrabold font-['Montserrat'] tracking-tight text-[#275d1d]">
-                  Daftar Trip
+                <h2 className="text-sm font-bold font-['Montserrat'] tracking-tight text-slate-800 uppercase">
+                  Direktori Trip
                 </h2>
-                <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
-                  {filteredTrips.length} dari {trips.length}
+                <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                  {filteredTrips.length} / {trips.length}
                 </span>
               </div>
 
-              {/* Opsi Tombol Status Khusus Mode Admin (Semua, Dari Admin, Dari Tim, Draft Merah, Final) */}
-              <div className="flex items-center gap-1.5 p-1 bg-[#f4f4f4] rounded-xl border border-[#275d1d]/20 overflow-x-auto no-scrollbar">
+              {/* Status Filter Pills */}
+              <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg overflow-x-auto no-scrollbar">
                 <button
                   type="button"
                   onClick={() => setTripStatusFilter('semua')}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                  className={`px-2 py-1 rounded text-xs font-semibold transition-all shrink-0 cursor-pointer ${
                     tripStatusFilter === 'semua'
-                      ? 'bg-[#275d1d] text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+                      ? 'bg-white text-slate-900 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   Semua ({trips.length})
@@ -745,21 +736,15 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setTripStatusFilter('admin')}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
+                  className={`px-2 py-1 rounded text-xs font-semibold transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
                     tripStatusFilter === 'admin'
-                      ? 'bg-[#275d1d] text-white shadow-xs'
-                      : 'text-[#275d1d] hover:text-[#1f4a17] hover:bg-slate-200/70'
+                      ? 'bg-white text-[#1e4916] shadow-2xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  <span>👑 Admin</span>
+                  <span>Admin</span>
                   {adminTrips.length > 0 && (
-                    <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
-                        tripStatusFilter === 'admin'
-                          ? 'bg-white/25 text-white'
-                          : 'bg-[#275d1d] text-white'
-                      }`}
-                    >
+                    <span className="text-[10px] px-1.5 rounded-full bg-slate-200 text-slate-700">
                       {adminTrips.length}
                     </span>
                   )}
@@ -768,21 +753,15 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setTripStatusFilter('tim')}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
+                  className={`px-2 py-1 rounded text-xs font-semibold transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
                     tripStatusFilter === 'tim'
-                      ? 'bg-amber-600 text-white shadow-xs'
-                      : 'text-amber-800 hover:text-amber-950 hover:bg-amber-100/70'
+                      ? 'bg-white text-amber-800 shadow-2xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  <span>👥 Tim</span>
+                  <span>Tim</span>
                   {teamTrips.length > 0 && (
-                    <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
-                        tripStatusFilter === 'tim'
-                          ? 'bg-white/25 text-white'
-                          : 'bg-amber-500 text-white'
-                      }`}
-                    >
+                    <span className="text-[10px] px-1.5 rounded-full bg-amber-100 text-amber-800">
                       {teamTrips.length}
                     </span>
                   )}
@@ -791,21 +770,15 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setTripStatusFilter('draft')}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-black transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
+                  className={`px-2 py-1 rounded text-xs font-semibold transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
                     tripStatusFilter === 'draft'
-                      ? 'bg-red-600 text-white shadow-xs'
-                      : 'text-red-700 hover:text-red-900 hover:bg-red-100/70'
+                      ? 'bg-white text-rose-700 shadow-2xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  <span>🔴 Draft</span>
+                  <span>Draft</span>
                   {draftTrips.length > 0 && (
-                    <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
-                        tripStatusFilter === 'draft'
-                          ? 'bg-white/30 text-white'
-                          : 'bg-red-500 text-white'
-                      }`}
-                    >
+                    <span className="text-[10px] px-1.5 rounded-full bg-rose-100 text-rose-800">
                       {draftTrips.length}
                     </span>
                   )}
@@ -814,21 +787,15 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setTripStatusFilter('final')}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
+                  className={`px-2 py-1 rounded text-xs font-semibold transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
                     tripStatusFilter === 'final'
-                      ? 'bg-emerald-700 text-white shadow-xs'
-                      : 'text-emerald-800 hover:text-emerald-950 hover:bg-slate-200/70'
+                      ? 'bg-white text-emerald-800 shadow-2xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  <span>🟢 Final</span>
+                  <span>Final</span>
                   {finalTrips.length > 0 && (
-                    <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
-                        tripStatusFilter === 'final'
-                          ? 'bg-white/25 text-white'
-                          : 'bg-emerald-100 text-emerald-900'
-                      }`}
-                    >
+                    <span className="text-[10px] px-1.5 rounded-full bg-emerald-100 text-emerald-800">
                       {finalTrips.length}
                     </span>
                   )}
@@ -837,13 +804,13 @@ export default function App() {
 
               {/* Search Bar */}
               <div className="relative">
-                <Search className="w-4 h-4 text-[#275d1d] absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Cari gunung / jalur..."
-                  className="w-full bg-[#f4f4f4] border border-[#275d1d]/30 rounded-lg pl-9 pr-3 py-2 text-xs sm:text-sm text-[#1a2e16] placeholder-gray-500 focus:outline-none focus:border-[#275d1d]"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#1e4916] focus:bg-white transition-colors"
                 />
               </div>
             </div>
@@ -862,17 +829,17 @@ export default function App() {
                   />
                 ))
               ) : (
-                <div className="bg-white border-2 border-dashed border-[#275d1d]/40 rounded-xl p-8 text-center space-y-3">
-                  <Mountain className="w-10 h-10 text-[#275d1d]/60 mx-auto" />
-                  <p className="text-xs text-gray-700 font-medium">
+                <div className="bg-white border border-dashed border-slate-300 rounded-xl p-6 text-center space-y-2">
+                  <Mountain className="w-8 h-8 text-slate-400 mx-auto" />
+                  <p className="text-xs text-slate-600 font-medium">
                     {trips.length === 0
                       ? 'Belum ada arsip trip. Anda bisa membuat trip baru atau memuat contoh.'
                       : 'Tidak ada trip yang sesuai pencarian.'}
                   </p>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-1">
                     <button
                       onClick={handleOpenAddModal}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-[#275d1d] text-white text-xs font-bold hover:bg-[#1f4a17] transition-all cursor-pointer shadow"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#1e4916] text-white text-xs font-semibold hover:bg-[#15340f] transition-colors cursor-pointer shadow-xs"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Buat Trip Baru</span>
@@ -880,9 +847,9 @@ export default function App() {
                     {trips.length === 0 && (
                       <button
                         onClick={handleRestoreDefaultTrips}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold border border-gray-300 transition-all cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-300 transition-colors cursor-pointer"
                       >
-                        <RotateCcw className="w-3.5 h-3.5 text-[#275d1d]" />
+                        <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
                         <span>Muat Contoh Trip</span>
                       </button>
                     )}
@@ -899,7 +866,7 @@ export default function App() {
             }`}
           >
             {/* Mobile Back to List Button */}
-            <div className="md:hidden mb-3">
+            <div className="md:hidden mb-2.5">
               <button
                 onClick={() => {
                   setMobileTab('list');
@@ -909,7 +876,7 @@ export default function App() {
                     window.history.replaceState({}, '', url.toString());
                   }
                 }}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#275d1d] hover:underline cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1e4916] hover:underline cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Kembali ke Daftar Trip</span>
@@ -928,20 +895,20 @@ export default function App() {
                 onCopyMediaKitLink={handleCopyMediaKitLink}
               />
             ) : (
-              <div className="bg-white border-2 border-[#275d1d] rounded-xl p-12 text-center space-y-4 shadow-md">
-                <Mountain className="w-14 h-14 text-[#275d1d]/50 mx-auto" />
-                <h3 className="text-lg font-extrabold font-['Montserrat'] tracking-tight text-[#275d1d]">
+              <div className="bg-white border border-slate-200 rounded-xl p-10 text-center space-y-3 shadow-xs">
+                <Mountain className="w-12 h-12 text-slate-300 mx-auto" />
+                <h3 className="text-base font-bold font-['Montserrat'] tracking-tight text-slate-800">
                   {trips.length === 0 ? 'Belum Ada Jadwal Trip' : 'Pilih atau Tambahkan Trip'}
                 </h3>
-                <p className="text-xs text-gray-700 max-w-sm mx-auto leading-relaxed">
+                <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
                   {trips.length === 0
                     ? 'Mulai buat arsip open trip atau private trip Anda untuk menghasilkan pamflet poster, itinerary, dan caption Instagram secara instan.'
                     : 'Pilih salah satu jadwal open trip di sebelah kiri untuk melihat detail, menyalin caption Instagram, atau mengekspor poster pamflet & itinerary.'}
                 </p>
-                <div className="flex items-center justify-center gap-2 flex-wrap">
+                <div className="flex items-center justify-center gap-2 flex-wrap pt-2">
                   <button
                     onClick={handleOpenAddModal}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#275d1d] hover:bg-[#1f4a17] text-white text-xs font-bold transition-all shadow cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#1e4916] hover:bg-[#15340f] text-white text-xs font-semibold transition-colors shadow-xs cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Tambah Open Trip Pertama</span>
@@ -949,9 +916,9 @@ export default function App() {
                   {trips.length === 0 && (
                     <button
                       onClick={handleRestoreDefaultTrips}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold border border-gray-300 transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-300 transition-colors cursor-pointer"
                     >
-                      <RotateCcw className="w-4 h-4 text-[#275d1d]" />
+                      <RotateCcw className="w-4 h-4 text-slate-500" />
                       <span>Muat Kembali Contoh Trip</span>
                     </button>
                   )}

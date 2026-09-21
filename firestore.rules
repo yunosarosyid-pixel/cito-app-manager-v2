@@ -25,20 +25,11 @@ service cloud.firestore {
       allow delete: if true;
     }
 
-    // Global settings collection (brand logo, konfigurasi app, & default trip):
-    // dapat dibaca publik & divalidasi saat tulis.
+    // Global settings collection (brand logo dll): dapat dibaca publik & divalidasi saat tulis
     match /settings/{settingId} {
       allow read: if true;
       allow write: if settingId in ['brand_logo', 'app_config']
         && (request.resource == null || (request.resource.data.id == settingId && request.resource.data.value is string));
-    }
-
-    // Default trip baru (durasi, include/exclude, kuota, mepo, kontak, dll)
-    // yang diatur admin lewat form "Tambah Trip" (tombol "Jadikan Default"),
-    // supaya konsisten di semua device & bisa diedit langsung dari Firestore.
-    match /settings/trip_defaults {
-      allow read: if true;
-      allow write: if true;
     }
 
     // Default deny catch-all untuk koleksi lainnya

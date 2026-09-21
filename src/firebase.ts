@@ -14,7 +14,7 @@ import {
   Unsubscribe,
 } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
-import { Trip, TripDefaults } from './types';
+import { Trip } from './types';
 
 // Initialize Firebase App
 const app = initializeApp(firebaseConfig);
@@ -99,7 +99,6 @@ export function handleFirestoreError(
 const TRIPS_COLLECTION = 'trips';
 const SETTINGS_COLLECTION = 'settings';
 const LOGO_DOC_ID = 'brand_logo';
-const TRIP_DEFAULTS_DOC_ID = 'trip_defaults';
 
 /**
  * Real-time listener for all trips from Firestore.
@@ -287,70 +286,6 @@ export async function saveLogoToCloud(logoUrl: string | null): Promise<void> {
       (error as { code?: string })?.code === 'resource-exhausted';
     if (isQuota) {
       console.warn('Firestore logo save quota exceeded; logo preserved locally.');
-      return;
-    }
-    handleFirestoreError(error, OperationType.WRITE, path);
-  }
-}
-
-/**
- * Real-time listener for trip default values in Cloud Firestore.
- * These are the values that pre-fill the "New Trip" form (durasi, include,
- * exclude, sk_berlaku, catatan_penting, dll), so they stay in sync across
- * devices (HP & laptop) when edited either in-app or directly in Firestore.
- */
-export function subscribeToTripDefaults(
-  onData: (defaults: TripDefaults | null) => void
-): Unsubscribe {
-  const defaultsDocRef = doc(db, SETTINGS_COLLECTION, TRIP_DEFAULTS_DOC_ID);
-  return onSnapshot(
-    defaultsDocRef,
-    (snapshot) => {
-      if (snapshot.exists()) {
-        onData(snapshot.data() as TripDefaults);
-      } else {
-        onData(null);
-      }
-    },
-    (error) => {
-      const errCode = (error as { code?: string })?.code;
-      const errMsg = String((error as { message?: string })?.message || error || '');
-      const isUnavailable =
-        errCode === 'unavailable' ||
-        errCode === 'resource-exhausted' ||
-        errMsg.toLowerCase().includes('quota') ||
-        errMsg.includes('offline') ||
-        errMsg.includes('backend');
-      if (isUnavailable) {
-        console.info('Trip defaults operating in offline/cache mode.');
-      } else {
-        console.warn('Trip defaults snapshot notice:', error);
-      }
-      onData(null);
-    }
-  );
-}
-
-/**
- * Save trip default values to Cloud Firestore, so they apply next time
- * anyone (any device) opens the "New Trip" form.
- */
-export async function saveTripDefaultsToCloud(defaults: TripDefaults): Promise<void> {
-  const path = `${SETTINGS_COLLECTION}/${TRIP_DEFAULTS_DOC_ID}`;
-  try {
-    const defaultsDocRef = doc(db, SETTINGS_COLLECTION, TRIP_DEFAULTS_DOC_ID);
-    await setDoc(
-      defaultsDocRef,
-      { ...defaults, updatedAt: new Date().toISOString() },
-      { merge: true }
-    );
-  } catch (error) {
-    const errMsg = String((error as { message?: string })?.message || error || '');
-    const isQuota =
-      errMsg.toLowerCase().includes('quota') ||
-      (error as { code?: string })?.code === 'resource-exhausted';
-    if (isQuota) {
-      console.warn('Firestore write quota exceeded; trip defaults saved locally only.');
       return;
     }
     handleFirestoreError(error, OperationType.WRITE, path);

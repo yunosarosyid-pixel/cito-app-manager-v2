@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Calendar, Clock, MapPin, Sparkles, AlertCircle } from 'lucide-react';
-import { Trip, TripStatus, MeetingPoint, TripSchedule, TripDefaults } from '../types';
+import { Trip, TripStatus, MeetingPoint, TripSchedule } from '../types';
 import { POPULAR_MOUNTAINS } from '../data/mountains';
 import { calculateDuration, computeAutoEndDate, generateDefaultItinerary } from '../utils/formatters';
 import { ItineraryEditor } from './ItineraryEditor';
-import { subscribeToTripDefaults, saveTripDefaultsToCloud } from '../firebase';
 
 // Official Default Lists for Cito Adventure Madiun
 export const DEFAULT_CITO_INCLUDE = [
@@ -45,11 +44,27 @@ export const DEFAULT_CITO_SK = [
 export const DEFAULT_CITO_CATATAN_PENTING =
   'SEBELUM MENDAKI, SANGAT DISARANKAN UNTUK RUTIN BEROLAHRAGA SEPERTI JOGGING, HIKING RINGAN, ATAU LATIHAN KARDIO MINIMAL 1-2 MINGGU SEBELUMNYA. MULAILAH DARI LATIHAN RINGAN, TINGKATKAN INTENSITASNYA, DAN PASTIKAN KONDISI TUBUH BENAR-BENAR SIAP.';
 
-// Default hardcoded di atas (DEFAULT_CITO_INCLUDE, dkk) dipakai sebagai fallback/
-// "Reset ke Baku Cito". Default aktual yang mengisi form "Trip Baru" disimpan di
-// Firestore (koleksi settings/trip_defaults) lewat subscribeToTripDefaults &
-// saveTripDefaultsToCloud, supaya sinkron di semua device (HP & laptop) dan bisa
-// diedit langsung dari Firebase Console.
+const DEFAULT_CATATAN_STORAGE_KEY = 'cito_default_catatan_penting_v1';
+
+export function getDefaultCatatanPenting(): string {
+  try {
+    const saved = localStorage.getItem(DEFAULT_CATATAN_STORAGE_KEY);
+    if (saved && saved.trim()) {
+      return saved;
+    }
+  } catch {
+    // fallback to standard
+  }
+  return DEFAULT_CITO_CATATAN_PENTING;
+}
+
+export function saveDefaultCatatanPenting(text: string): void {
+  try {
+    localStorage.setItem(DEFAULT_CATATAN_STORAGE_KEY, text);
+  } catch {
+    // ignore
+  }
+}
 
 interface TripModalProps {
   isOpen: boolean;
@@ -88,8 +103,6 @@ export const TripModal: React.FC<TripModalProps> = ({
   const [skText, setSkText] = useState('');
   const [catatanPenting, setCatatanPenting] = useState('');
   const [defaultCatatanSaved, setDefaultCatatanSaved] = useState(false);
-  const [savedFieldNotice, setSavedFieldNotice] = useState<string | null>(null);
-  const [cloudDefaults, setCloudDefaults] = useState<TripDefaults | null>(null);
   const [itinerary, setItinerary] = useState('');
   const [kontakWaJatim, setKontakWaJatim] = useState('+6282230444428');
   const [kontakWaJakarta, setKontakWaJakarta] = useState('+6289503689266');
@@ -98,29 +111,6 @@ export const TripModal: React.FC<TripModalProps> = ({
 
   // Available trails for currently selected mountain
   const currentMountain = POPULAR_MOUNTAINS[parseInt(selectedMountainIndex, 10)] || null;
-
-  // Menandai apakah default cloud sudah diterapkan untuk sesi "Trip Baru" yang
-  // sedang terbuka ini. Mencegah form ter-reset ulang setiap kali cloudDefaults
-  // berubah (misalnya tepat setelah menekan "Jadikan Default"), yang sebelumnya
-  // membuat isian form yang sedang diketik terasa "kembali ke awal".
-  const newTripDefaultsAppliedRef = React.useRef(false);
-
-  // Langganan default trip dari Firestore (settings/trip_defaults), supaya
-  // konsisten di semua device dan bisa diedit langsung dari Firebase Console.
-  useEffect(() => {
-    const unsubscribe = subscribeToTripDefaults((defaults) => {
-      setCloudDefaults(defaults);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Reset flag setiap kali modal dibuka ulang dalam mode "Trip Baru", supaya
-  // default cloud tetap diterapkan saat form benar-benar baru dibuka.
-  useEffect(() => {
-    if (isOpen && !tripToEdit) {
-      newTripDefaultsAppliedRef.current = false;
-    }
-  }, [isOpen, tripToEdit]);
 
   useEffect(() => {
     if (tripToEdit) {
@@ -162,14 +152,6 @@ export const TripModal: React.FC<TripModalProps> = ({
         setSelectedMountainIndex('custom');
       }
     } else {
-      // Baru terapkan default sekali per sesi form terbuka; abaikan perubahan
-      // cloudDefaults berikutnya selama form masih terbuka (mis. setelah klik
-      // "Jadikan Default"), supaya isian yang sedang diketik tidak tertimpa.
-      if (newTripDefaultsAppliedRef.current) {
-        return;
-      }
-      newTripDefaultsAppliedRef.current = true;
-
       // New Trip Default: Gunung Sindoro
       const defaultMtn = POPULAR_MOUNTAINS[0];
       setSelectedMountainIndex('0');
@@ -179,57 +161,28 @@ export const TripModal: React.FC<TripModalProps> = ({
       setStatus('Buka');
       setTanggalMulai('2026-09-10');
       setTanggalSelesai('2026-09-11');
-      setDurasi(cloudDefaults?.durasi || '2 Hari 1 Malam');
+      setDurasi('2 Hari 1 Malam');
       setJadwalTambahan([]);
-      setMinPeserta(cloudDefaults?.min_peserta || '15');
-      setMinPesertaJakarta(cloudDefaults?.min_peserta_jakarta || '15');
-      setMaxPeserta(cloudDefaults?.max_peserta || '30');
-      setMepoList(
-        cloudDefaults?.harga_mepo && cloudDefaults.harga_mepo.length > 0
-          ? cloudDefaults.harga_mepo
-          : [
-              { lokasi: 'Basecamp', harga: 'IDR 600.000' },
-              { lokasi: 'Madiun', harga: 'IDR 700.000' },
-              { lokasi: 'Surabaya', harga: 'IDR 850.000' },
-            ]
-      );
-      setIncludeText((cloudDefaults?.include && cloudDefaults.include.length > 0
-        ? cloudDefaults.include
-        : DEFAULT_CITO_INCLUDE
-      ).join('\n'));
-      setExcludeText((cloudDefaults?.exclude && cloudDefaults.exclude.length > 0
-        ? cloudDefaults.exclude
-        : DEFAULT_CITO_EXCLUDE
-      ).join('\n'));
-      setExtraPorter(cloudDefaults?.extra_porter ?? 'Jika di perlukan');
-      setSkText((cloudDefaults?.sk_berlaku && cloudDefaults.sk_berlaku.length > 0
-        ? cloudDefaults.sk_berlaku
-        : DEFAULT_CITO_SK
-      ).join('\n'));
-      setCatatanPenting(cloudDefaults?.catatan_penting || DEFAULT_CITO_CATATAN_PENTING);
+      setMinPeserta('15');
+      setMinPesertaJakarta('15');
+      setMaxPeserta('30');
+      setMepoList([
+        { lokasi: 'Basecamp', harga: 'IDR 600.000' },
+        { lokasi: 'Madiun', harga: 'IDR 700.000' },
+        { lokasi: 'Surabaya', harga: 'IDR 850.000' }
+      ]);
+      setIncludeText(DEFAULT_CITO_INCLUDE.join('\n'));
+      setExcludeText(DEFAULT_CITO_EXCLUDE.join('\n'));
+      setExtraPorter('Jika di perlukan');
+      setSkText(DEFAULT_CITO_SK.join('\n'));
+      setCatatanPenting(getDefaultCatatanPenting());
       setItinerary(generateDefaultItinerary(defaultMtn.name, defaultMtn.trails[0], '2026-09-10', '2026-09-11'));
-      setKontakWaJatim(cloudDefaults?.kontak_wa_jatim || '+6282230444428');
-      setKontakWaJakarta(cloudDefaults?.kontak_wa_jakarta || '+6289503689266');
-      setKontakIg(cloudDefaults?.kontak_ig || '@citoadventuremadiun');
+      setKontakWaJatim('+6282230444428');
+      setKontakWaJakarta('+6289503689266');
+      setKontakIg('@citoadventuremadiun');
       setIsDraft(false);
     }
-  }, [tripToEdit, isOpen, cloudDefaults]);
-
-  // Simpan satu/lebih field sebagai default trip baru ke Firestore (sinkron semua device)
-  const handleSaveAsDefault = (fieldLabel: string, patch: TripDefaults) => {
-    saveTripDefaultsToCloud(patch)
-      .then(() => {
-        setSavedFieldNotice(fieldLabel);
-        setTimeout(() => setSavedFieldNotice((cur) => (cur === fieldLabel ? null : cur)), 2500);
-      })
-      .catch((err) => {
-        console.warn('Gagal menyimpan default ke cloud:', err);
-        window.alert(
-          'Gagal menyimpan default ke cloud. Cek koneksi internet Anda, lalu coba lagi.\n\nDetail: ' +
-            (err instanceof Error ? err.message : String(err))
-        );
-      });
-  };
+  }, [tripToEdit, isOpen]);
 
   // Handle mountain dropdown change
   const handleMountainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -425,27 +378,27 @@ export const TripModal: React.FC<TripModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white border-2 border-[#275d1d] text-gray-900 w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden my-4 sm:my-8 animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-white border border-slate-200 text-slate-900 w-full max-w-3xl rounded-xl shadow-xl overflow-hidden my-4 sm:my-8 animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="bg-[#275d1d] px-5 sm:px-6 py-4 border-b border-[#275d1d] flex items-center justify-between">
+        <div className="bg-[#0f172a] px-5 sm:px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div>
-            <span className="text-[10px] sm:text-xs font-bold tracking-wider text-[#d1d1d1] uppercase font-['Montserrat']">
+            <span className="text-[10px] sm:text-xs font-bold tracking-wider text-emerald-400 uppercase font-['Montserrat']">
               Formulir Trip Cito Adventure
             </span>
-            <h2 className="text-lg sm:text-xl font-extrabold font-['Montserrat'] tracking-tight text-white">
+            <h2 className="text-base sm:text-lg font-bold font-['Montserrat'] tracking-tight text-white">
               {tripToEdit ? 'Edit Data Trip' : 'Tambah Open Trip Baru'}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="text-white hover:bg-black/20 p-1.5 rounded-md transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5 max-h-[80vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
           {/* Section 1: Gunung & Jalur */}
           <div className="space-y-3 bg-[#f5f5f5] p-4 rounded-lg border border-[#275d1d]/30">
             <h3 className="text-xs font-extrabold text-[#275d1d] tracking-wider uppercase font-['Montserrat'] flex items-center gap-2">
@@ -725,30 +678,9 @@ export const TripModal: React.FC<TripModalProps> = ({
               <h3 className="text-xs font-extrabold text-[#275d1d] tracking-wider uppercase font-['Montserrat']">
                 3. Kuota Peserta (Skema Baru)
               </h3>
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {savedFieldNotice === 'kuota' && (
-                  <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded animate-pulse">
-                    ✓ Tersimpan!
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleSaveAsDefault('kuota', {
-                      min_peserta: minPeserta.trim(),
-                      min_peserta_jakarta: minPesertaJakarta.trim(),
-                      max_peserta: maxPeserta.trim(),
-                    })
-                  }
-                  className="text-[11px] font-bold text-[#15803D] hover:text-green-900 bg-green-100 hover:bg-green-200 px-2 py-0.5 rounded cursor-pointer transition-colors"
-                  title="Simpan kuota ini sebagai default untuk semua trip baru (tersinkron di semua device)"
-                >
-                  💾 Jadikan Default
-                </button>
-                <span className="text-[11px] font-bold text-[#275d1d] bg-[#275d1d]/10 px-2.5 py-0.5 rounded-full border border-[#275d1d]/20">
-                  Tampilan: {minPeserta || '15'} – {minPesertaJakarta || '15'} / {maxPeserta || '30'} Pax
-                </span>
-              </div>
+              <span className="text-[11px] font-bold text-[#275d1d] bg-[#275d1d]/10 px-2.5 py-0.5 rounded-full border border-[#275d1d]/20">
+                Tampilan: {minPeserta || '15'} – {minPesertaJakarta || '15'} / {maxPeserta || '30'} Pax
+              </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -800,33 +732,14 @@ export const TripModal: React.FC<TripModalProps> = ({
               <h3 className="text-xs font-extrabold text-[#275d1d] tracking-wider uppercase font-['Montserrat']">
                 4. Tarif per Meeting Point (MEPO)
               </h3>
-              <div className="flex items-center gap-2 flex-wrap">
-                {savedFieldNotice === 'mepo' && (
-                  <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded animate-pulse">
-                    ✓ Tersimpan!
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleSaveAsDefault('mepo', {
-                      harga_mepo: mepoList.filter((m) => m.lokasi.trim() || m.harga.trim()),
-                    })
-                  }
-                  className="text-[11px] font-bold text-[#15803D] hover:text-green-900 bg-green-100 hover:bg-green-200 px-2 py-0.5 rounded cursor-pointer transition-colors"
-                  title="Simpan daftar titik kumpul & harga ini sebagai default untuk semua trip baru (tersinkron di semua device)"
-                >
-                  💾 Jadikan Default
-                </button>
-                <button
-                  type="button"
-                  onClick={handleAddMepo}
-                  className="text-xs font-bold text-[#275d1d] hover:underline flex items-center gap-1 cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Tambah Titik Kumpul
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleAddMepo}
+                className="text-xs font-bold text-[#275d1d] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Tambah Titik Kumpul
+              </button>
             </div>
 
             <div className="space-y-2">
@@ -882,33 +795,14 @@ export const TripModal: React.FC<TripModalProps> = ({
                 <label className="block text-xs font-extrabold text-[#275d1d] uppercase font-['Montserrat']">
                   5. Fasilitas Include:
                 </label>
-                <div className="flex items-center gap-1.5">
-                  {savedFieldNotice === 'include' && (
-                    <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded animate-pulse">
-                      ✓ Tersimpan!
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleSaveAsDefault('include', {
-                        include: includeText.split('\n').map((s) => s.trim()).filter(Boolean),
-                      })
-                    }
-                    className="text-[11px] font-bold text-[#15803D] hover:text-green-900 bg-green-100 hover:bg-green-200 px-2 py-0.5 rounded cursor-pointer transition-colors"
-                    title="Simpan daftar include ini sebagai default untuk semua trip baru (tersinkron di semua device)"
-                  >
-                    💾 Jadikan Default
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIncludeText(DEFAULT_CITO_INCLUDE.join('\n'))}
-                    className="text-[11px] font-bold text-[#275d1d] hover:text-[#1a3814] bg-[#275d1d]/10 hover:bg-[#275d1d]/20 px-2 py-0.5 rounded cursor-pointer transition-colors"
-                    title="Terapkan 14 item fasilitas baku Cito Adventure"
-                  >
-                    ↺ Pakai Default Cito
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setIncludeText(DEFAULT_CITO_INCLUDE.join('\n'))}
+                  className="text-[11px] font-bold text-[#275d1d] hover:text-[#1a3814] bg-[#275d1d]/10 hover:bg-[#275d1d]/20 px-2 py-0.5 rounded cursor-pointer transition-colors"
+                  title="Terapkan 14 item fasilitas baku Cito Adventure"
+                >
+                  ↺ Pakai Default Cito
+                </button>
               </div>
               <textarea
                 rows={7}
@@ -923,33 +817,14 @@ export const TripModal: React.FC<TripModalProps> = ({
                 <label className="block text-xs font-extrabold text-gray-800 uppercase font-['Montserrat']">
                   Fasilitas Exclude:
                 </label>
-                <div className="flex items-center gap-1.5">
-                  {savedFieldNotice === 'exclude' && (
-                    <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded animate-pulse">
-                      ✓ Tersimpan!
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleSaveAsDefault('exclude', {
-                        exclude: excludeText.split('\n').map((s) => s.trim()).filter(Boolean),
-                      })
-                    }
-                    className="text-[11px] font-bold text-[#15803D] hover:text-green-900 bg-green-100 hover:bg-green-200 px-2 py-0.5 rounded cursor-pointer transition-colors"
-                    title="Simpan daftar exclude ini sebagai default untuk semua trip baru (tersinkron di semua device)"
-                  >
-                    💾 Jadikan Default
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setExcludeText(DEFAULT_CITO_EXCLUDE.join('\n'))}
-                    className="text-[11px] font-bold text-[#275d1d] hover:text-[#1a3814] bg-[#275d1d]/10 hover:bg-[#275d1d]/20 px-2 py-0.5 rounded cursor-pointer transition-colors"
-                    title="Terapkan 6 item exclude baku Cito Adventure"
-                  >
-                    ↺ Pakai Default Cito
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setExcludeText(DEFAULT_CITO_EXCLUDE.join('\n'))}
+                  className="text-[11px] font-bold text-[#275d1d] hover:text-[#1a3814] bg-[#275d1d]/10 hover:bg-[#275d1d]/20 px-2 py-0.5 rounded cursor-pointer transition-colors"
+                  title="Terapkan 6 item exclude baku Cito Adventure"
+                >
+                  ↺ Pakai Default Cito
+                </button>
               </div>
               <textarea
                 rows={7}
@@ -963,26 +838,9 @@ export const TripModal: React.FC<TripModalProps> = ({
 
           {/* Extra porter */}
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-bold text-gray-800">
-                Extra Porter Pribadi (Opsional):
-              </label>
-              <div className="flex items-center gap-1.5">
-                {savedFieldNotice === 'extra_porter' && (
-                  <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded animate-pulse">
-                    ✓ Tersimpan!
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => handleSaveAsDefault('extra_porter', { extra_porter: extraPorter.trim() })}
-                  className="text-[11px] font-bold text-[#15803D] hover:text-green-900 bg-green-100 hover:bg-green-200 px-2 py-0.5 rounded cursor-pointer transition-colors"
-                  title="Simpan teks ini sebagai default untuk semua trip baru"
-                >
-                  💾 Jadikan Default
-                </button>
-              </div>
-            </div>
+            <label className="block text-xs font-bold text-gray-800 mb-1">
+              Extra Porter Pribadi (Opsional):
+            </label>
             <input
               type="text"
               value={extraPorter}
@@ -998,33 +856,14 @@ export const TripModal: React.FC<TripModalProps> = ({
               <h3 className="text-xs font-extrabold text-[#275d1d] tracking-wider uppercase font-['Montserrat']">
                 6. Syarat Ketentuan & Catatan Penting
               </h3>
-              <div className="flex items-center gap-1.5">
-                {savedFieldNotice === 'sk_berlaku' && (
-                  <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded animate-pulse">
-                    ✓ Tersimpan!
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleSaveAsDefault('sk_berlaku', {
-                      sk_berlaku: skText.split('\n').map((s) => s.trim()).filter(Boolean),
-                    })
-                  }
-                  className="text-[11px] font-bold text-[#15803D] hover:text-green-900 bg-green-100 hover:bg-green-200 px-2 py-0.5 rounded cursor-pointer transition-colors"
-                  title="Simpan syarat ketentuan ini sebagai default untuk semua trip baru (tersinkron di semua device)"
-                >
-                  💾 Jadikan Default
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSkText(DEFAULT_CITO_SK.join('\n'))}
-                  className="text-[11px] font-bold text-[#275d1d] hover:text-[#1a3814] bg-[#275d1d]/10 hover:bg-[#275d1d]/20 px-2 py-0.5 rounded cursor-pointer transition-colors"
-                  title="Terapkan 6 butir syarat ketentuan baku Cito Adventure"
-                >
-                  ↺ Pakai Default S&K
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setSkText(DEFAULT_CITO_SK.join('\n'))}
+                className="text-[11px] font-bold text-[#275d1d] hover:text-[#1a3814] bg-[#275d1d]/10 hover:bg-[#275d1d]/20 px-2 py-0.5 rounded cursor-pointer transition-colors"
+                title="Terapkan 6 butir syarat ketentuan baku Cito Adventure"
+              >
+                ↺ Pakai Default S&K
+              </button>
             </div>
             <div>
               <label className="block text-xs font-bold text-gray-800 mb-1">S&K Berlaku (1 per baris):</label>
@@ -1048,20 +887,12 @@ export const TripModal: React.FC<TripModalProps> = ({
                   <button
                     type="button"
                     onClick={() => {
-                      saveTripDefaultsToCloud({ catatan_penting: catatanPenting.trim() })
-                        .then(() => {
-                          setDefaultCatatanSaved(true);
-                          setTimeout(() => setDefaultCatatanSaved(false), 3000);
-                        })
-                        .catch((err) => {
-                          console.warn('Gagal menyimpan default ke cloud:', err);
-                          window.alert(
-                            'Gagal menyimpan default ke cloud. Cek koneksi internet Anda, lalu coba lagi.'
-                          );
-                        });
+                      saveDefaultCatatanPenting(catatanPenting);
+                      setDefaultCatatanSaved(true);
+                      setTimeout(() => setDefaultCatatanSaved(false), 3000);
                     }}
                     className="text-[11px] font-bold text-[#15803D] hover:text-green-900 bg-green-100 hover:bg-green-200 px-2 py-0.5 rounded cursor-pointer transition-colors"
-                    title="Simpan teks catatan penting ini sebagai template default permanen untuk semua trip baru (tersinkron di semua device)"
+                    title="Simpan teks catatan penting ini sebagai template default permanen untuk semua trip baru"
                   >
                     💾 Simpan Jadi Default Baru
                   </button>
@@ -1069,17 +900,9 @@ export const TripModal: React.FC<TripModalProps> = ({
                     type="button"
                     onClick={() => {
                       setCatatanPenting(DEFAULT_CITO_CATATAN_PENTING);
-                      saveTripDefaultsToCloud({ catatan_penting: DEFAULT_CITO_CATATAN_PENTING })
-                        .then(() => {
-                          setDefaultCatatanSaved(true);
-                          setTimeout(() => setDefaultCatatanSaved(false), 3000);
-                        })
-                        .catch((err) => {
-                          console.warn('Gagal menyimpan default ke cloud:', err);
-                          window.alert(
-                            'Gagal menyimpan default ke cloud. Cek koneksi internet Anda, lalu coba lagi.'
-                          );
-                        });
+                      saveDefaultCatatanPenting(DEFAULT_CITO_CATATAN_PENTING);
+                      setDefaultCatatanSaved(true);
+                      setTimeout(() => setDefaultCatatanSaved(false), 3000);
                     }}
                     className="text-[11px] font-bold text-[#275d1d] hover:text-[#1a3814] bg-[#275d1d]/10 hover:bg-[#275d1d]/20 px-2 py-0.5 rounded cursor-pointer transition-colors"
                     title="Kembalikan ke template catatan penting resmi Cito Adventure"
@@ -1107,30 +930,9 @@ export const TripModal: React.FC<TripModalProps> = ({
               <h3 className="text-xs font-extrabold text-[#275d1d] tracking-wider uppercase font-['Montserrat']">
                 7. Kontak Resmi Pendaftaran (2 Admin Wilayah & Instagram)
               </h3>
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {savedFieldNotice === 'kontak' && (
-                  <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded animate-pulse">
-                    ✓ Tersimpan!
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleSaveAsDefault('kontak', {
-                      kontak_wa_jatim: kontakWaJatim.trim(),
-                      kontak_wa_jakarta: kontakWaJakarta.trim(),
-                      kontak_ig: kontakIg.trim(),
-                    })
-                  }
-                  className="text-[11px] font-bold text-[#15803D] hover:text-green-900 bg-green-100 hover:bg-green-200 px-2 py-0.5 rounded cursor-pointer transition-colors"
-                  title="Simpan kontak ini sebagai default untuk semua trip baru (tersinkron di semua device)"
-                >
-                  💾 Jadikan Default
-                </button>
-                <span className="text-[11px] font-bold text-[#15803D] bg-green-100 px-2 py-0.5 rounded-full border border-green-300">
-                  ✓ Otomatis Aktif di Pamflet & Caption
-                </span>
-              </div>
+              <span className="text-[11px] font-bold text-[#15803D] bg-green-100 px-2 py-0.5 rounded-full border border-green-300">
+                ✓ Otomatis Aktif di Pamflet & Caption
+              </span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
@@ -1262,11 +1064,11 @@ export const TripModal: React.FC<TripModalProps> = ({
           </div>
 
           {/* Buttons Footer */}
-          <div className="pt-4 border-t border-[#275d1d]/20 flex flex-wrap items-center justify-between gap-2.5">
+          <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2.5">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs sm:text-sm font-bold text-gray-700 hover:text-gray-900 bg-[#d1d1d1] hover:bg-[#c2c2c2] rounded transition-colors cursor-pointer"
+              className="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
             >
               Batal
             </button>
@@ -1277,13 +1079,12 @@ export const TripModal: React.FC<TripModalProps> = ({
                 type="button"
                 onClick={(e) => {
                   setIsDraft(true);
-                  // Trigger form submit via button click
                   setTimeout(() => {
                     const form = (e.target as HTMLElement).closest('form');
                     if (form) form.requestSubmit();
                   }, 50);
                 }}
-                className="px-3.5 py-2 text-xs sm:text-sm font-extrabold text-white bg-red-600 hover:bg-red-700 border border-red-700 rounded shadow-xs transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
+                className="px-3.5 py-2 text-xs sm:text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
               >
                 <span>🔴</span>
                 <span>Simpan sebagai Draft</span>
@@ -1292,13 +1093,10 @@ export const TripModal: React.FC<TripModalProps> = ({
               {/* Tombol Simpan Utama (Final) */}
               <button
                 type="submit"
-                onClick={() => {
-                  // Jika pengguna menekan tombol hijau utama ini, kita jadikan Final kecuali jika user sengaja memilih Draft
-                }}
-                className={`px-5 py-2 text-xs sm:text-sm font-extrabold text-white rounded shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 ${
+                className={`px-5 py-2 text-xs sm:text-sm font-bold text-white rounded-lg shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 ${
                   isDraft
-                    ? 'bg-red-700 hover:bg-red-800'
-                    : 'bg-[#275d1d] hover:bg-[#1f4a17]'
+                    ? 'bg-rose-700 hover:bg-rose-800'
+                    : 'bg-[#1e4916] hover:bg-[#15340f]'
                 }`}
               >
                 <span>{isDraft ? '🔴' : '🟢'}</span>

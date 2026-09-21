@@ -107,24 +107,7 @@ function aistudioMediaPlugin(): Plugin {
 
 export default defineConfig(() => {
   return {
-    base: '/',
-    build: {
-      rollupOptions: {
-        output: {
-          // Pecah bundle besar jadi beberapa file lebih kecil supaya proses
-          // precache Service Worker (untuk install PWA) tidak macet di
-          // jaringan HP yang lambat/tidak stabil.
-          manualChunks: {
-            firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-            pdf: ['jspdf'],
-            zip: ['jszip'],
-            qrcode: ['qrcode'],
-            motion: ['motion'],
-            icons: ['lucide-react'],
-          },
-        },
-      },
-    },
+    base: './',
     plugins: [
       react(),
       tailwindcss(),
@@ -136,9 +119,9 @@ export default defineConfig(() => {
         },
         includeAssets: ['favicon.png', 'apple-touch-icon.png', 'logo.png'],
         manifest: {
-          id: '/?v=20260919v4',
-          name: 'Cito Trip Manager V2',
-          short_name: 'Cito V2',
+          id: '/?v=20260913',
+          name: 'Cito Trip Manager',
+          short_name: 'Cito Trip Manager',
           description: 'Aplikasi manajemen arsip trip dan pembuat poster serta caption open trip gunung Cito Adventure Madiun.',
           theme_color: '#275d1d',
           background_color: '#d1d1d1',
@@ -178,8 +161,11 @@ export default defineConfig(() => {
       },
     },
     server: {
+      port: 3000,
+      host: '0.0.0.0',
+      allowedHosts: true as const,
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+      // Do not modify: file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
       // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},

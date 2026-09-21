@@ -49,23 +49,6 @@ export interface Trip {
   updated_at: number;
 }
 
-export interface TripDefaults {
-  durasi?: string;
-  min_peserta?: string;
-  min_peserta_jakarta?: string;
-  max_peserta?: string;
-  harga_mepo?: MeetingPoint[];
-  include?: string[];
-  exclude?: string[];
-  extra_porter?: string;
-  sk_berlaku?: string[];
-  catatan_penting?: string;
-  kontak_wa_jatim?: string;
-  kontak_wa_jakarta?: string;
-  kontak_ig?: string;
-  updatedAt?: string;
-}
-
 export interface TeamMember {
   id: string;
   status: string; // e.g. Guide, Porter, Kameramen, Leader, Sweeper

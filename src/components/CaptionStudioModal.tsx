@@ -197,26 +197,26 @@ export const CaptionStudioModal: React.FC<CaptionStudioModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-[#f0f0f0] border-2 border-[#275d1d] w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col max-h-[96vh] overflow-hidden my-auto">
+      <div className="bg-[#f8fafc] border border-slate-200 w-full max-w-5xl rounded-2xl shadow-xl flex flex-col max-h-[96vh] overflow-hidden my-auto">
         {/* Header */}
-        <div className="bg-[#275d1d] text-white px-5 py-3.5 flex items-center justify-between gap-3 shrink-0">
+        <div className="bg-[#0f172a] text-white px-5 py-3.5 flex items-center justify-between gap-3 shrink-0 border-b border-slate-800">
           <div className="flex items-center gap-2.5 min-w-0">
-            <span className="p-1.5 bg-white/15 rounded-lg">
-              <Share2 className="w-5 h-5 text-amber-300" />
+            <span className="p-1.5 bg-white/10 rounded-lg">
+              <Share2 className="w-4 h-4 text-emerald-400" />
             </span>
             <div className="min-w-0">
-              <h2 className="text-base sm:text-lg font-extrabold font-['Montserrat'] tracking-tight truncate">
+              <h2 className="text-sm sm:text-base font-bold font-['Montserrat'] tracking-tight truncate">
                 Generator Caption & Broadcast Promosi
               </h2>
-              <p className="text-[11px] sm:text-xs text-[#d1d1d1] truncate">
-                Promosi Instan 1-Klik: 🏔️ {trip.nama_gunung.toUpperCase()} {trip.ketinggian_mdpl || ''} · 📌 {trip.jalur.toUpperCase()}
+              <p className="text-[11px] text-slate-400 truncate">
+                Promosi Instan: 🏔️ {trip.nama_gunung.toUpperCase()} {trip.ketinggian_mdpl || ''} · 📌 {trip.jalur.toUpperCase()}
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
             title="Tutup Modal"
           >
             <X className="w-5 h-5" />
@@ -224,43 +224,43 @@ export const CaptionStudioModal: React.FC<CaptionStudioModalProps> = ({
         </div>
 
         {/* Tab Selector */}
-        <div className="bg-white border-b border-[#275d1d]/20 px-4 py-2.5 flex items-center gap-2 overflow-x-auto shrink-0">
+        <div className="bg-white border-b border-slate-200 px-4 py-2 flex items-center gap-2 overflow-x-auto shrink-0">
           <button
             type="button"
             onClick={() => handleTabChange('instagram')}
-            className={`px-3.5 py-2 rounded-lg text-xs font-extrabold transition-all flex items-center gap-2 cursor-pointer shadow-xs ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
               activeTab === 'instagram'
-                ? 'bg-[#275d1d] text-white'
-                : 'bg-[#e8e8e8] text-[#275d1d] hover:bg-[#dedede]'
+                ? 'bg-[#1e4916] text-white'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
-            <Instagram className="w-4 h-4" />
+            <Instagram className="w-3.5 h-3.5" />
             <span>Feed & Reels Instagram</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleTabChange('whatsapp')}
-            className={`px-3.5 py-2 rounded-lg text-xs font-extrabold transition-all flex items-center gap-2 cursor-pointer shadow-xs ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
               activeTab === 'whatsapp'
-                ? 'bg-[#275d1d] text-white'
-                : 'bg-[#e8e8e8] text-[#275d1d] hover:bg-[#dedede]'
+                ? 'bg-[#1e4916] text-white'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
-            <MessageSquare className="w-4 h-4 text-emerald-600" />
+            <MessageSquare className="w-3.5 h-3.5" />
             <span>Broadcast WhatsApp Grup</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleTabChange('story')}
-            className={`px-3.5 py-2 rounded-lg text-xs font-extrabold transition-all flex items-center gap-2 cursor-pointer shadow-xs ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
               activeTab === 'story'
-                ? 'bg-[#275d1d] text-white'
-                : 'bg-[#e8e8e8] text-[#275d1d] hover:bg-[#dedede]'
+                ? 'bg-[#1e4916] text-white'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
-            <Zap className="w-4 h-4 text-amber-500" />
+            <Zap className="w-3.5 h-3.5 text-amber-500" />
             <span>Story & Status Singkat</span>
           </button>
         </div>
@@ -685,7 +685,7 @@ export const CaptionStudioModal: React.FC<CaptionStudioModalProps> = ({
               <button
                 type="button"
                 onClick={handleCopy}
-                className="py-2.5 px-4 bg-[#275d1d] hover:bg-[#1f4a17] text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-95"
+                className="py-2.5 px-4 bg-[#1e4916] hover:bg-[#15340f] text-white rounded-lg text-xs sm:text-sm font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
               >
                 {isCopied ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
                 <span>{isCopied ? 'Tersalin ke Clipboard!' : 'Salin Teks Caption'}</span>
@@ -694,7 +694,7 @@ export const CaptionStudioModal: React.FC<CaptionStudioModalProps> = ({
               <button
                 type="button"
                 onClick={handleOpenWhatsAppDirect}
-                className="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-95"
+                className="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs sm:text-sm font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                 title="Buka WhatsApp dengan pesan ini"
               >
                 <ExternalLink className="w-4 h-4 text-white" />

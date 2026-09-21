@@ -31,56 +31,56 @@ export const GitHubGuideModal: React.FC<GitHubGuideModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white border-2 border-[#275d1d] text-gray-900 w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden my-6 flex flex-col max-h-[90vh]">
+      <div className="bg-white border border-slate-200 text-slate-900 w-full max-w-2xl rounded-xl shadow-xl overflow-hidden my-6 flex flex-col max-h-[90vh]">
         {/* Modal Header */}
-        <div className="bg-[#275d1d] px-6 py-4 border-b border-[#275d1d] flex items-center justify-between shrink-0">
+        <div className="bg-[#0f172a] px-6 py-4 border-b border-slate-800 flex items-center justify-between shrink-0 text-white">
           <div className="flex items-center gap-2.5">
-            <Github className="w-6 h-6 text-white" />
+            <Github className="w-5 h-5 text-slate-200" />
             <div>
-              <h3 className="font-extrabold text-base sm:text-lg font-['Montserrat'] tracking-tight text-white">
+              <h3 className="font-bold text-sm sm:text-base font-['Montserrat'] tracking-tight text-white">
                 Panduan Lengkap Deploy ke GitHub & Online
               </h3>
-              <p className="text-xs text-white/80">Solusi anti gagal untuk upload repository dan deploy website</p>
+              <p className="text-xs text-slate-400">Solusi anti gagal untuk upload repository dan deploy website</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-white hover:bg-black/20 p-1.5 rounded transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="bg-gray-100 px-6 pt-3 flex gap-2 border-b border-gray-300 shrink-0">
+        <div className="bg-slate-100 px-6 pt-2.5 flex gap-1.5 border-b border-slate-200 shrink-0">
           <button
             onClick={() => setActiveTab('steps')}
-            className={`px-4 py-2 text-xs font-bold rounded-t-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-t-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'steps'
-                ? 'bg-white text-[#275d1d] border-t-2 border-x-2 border-[#275d1d] -mb-[1px]'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                ? 'bg-white text-slate-900 border-t-2 border-x border-[#1e4916] -mb-[1px] font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
             }`}
           >
-            <Terminal className="w-3.5 h-3.5" />
+            <Terminal className="w-3.5 h-3.5 text-[#1e4916]" />
             Langkah Push Git
           </button>
           <button
             onClick={() => setActiveTab('pages')}
-            className={`px-4 py-2 text-xs font-bold rounded-t-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-t-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'pages'
-                ? 'bg-white text-[#275d1d] border-t-2 border-x-2 border-[#275d1d] -mb-[1px]'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                ? 'bg-white text-slate-900 border-t-2 border-x border-[#1e4916] -mb-[1px] font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
             }`}
           >
-            <Globe className="w-3.5 h-3.5" />
+            <Globe className="w-3.5 h-3.5 text-[#1e4916]" />
             Deploy Website (Live)
           </button>
           <button
             onClick={() => setActiveTab('errors')}
-            className={`px-4 py-2 text-xs font-bold rounded-t-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-t-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'errors'
-                ? 'bg-white text-[#275d1d] border-t-2 border-x-2 border-[#275d1d] -mb-[1px]'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                ? 'bg-white text-slate-900 border-t-2 border-x border-[#1e4916] -mb-[1px] font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
             }`}
           >
             <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
@@ -91,13 +91,13 @@ export const GitHubGuideModal: React.FC<GitHubGuideModalProps> = ({
         {/* Modal Body */}
         <div className="p-6 space-y-4 text-sm overflow-y-auto">
           {/* Quick ZIP Download Banner */}
-          <div className="bg-[#275d1d]/10 border border-[#275d1d]/30 rounded-lg p-3.5 flex items-center justify-between gap-3 flex-wrap">
+          <div className="bg-emerald-50/60 border border-emerald-200 rounded-xl p-3.5 flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <h4 className="font-bold text-[#275d1d] flex items-center gap-1.5 text-xs sm:text-sm">
-                <DownloadCloud className="w-4 h-4 text-[#275d1d]" />
+              <h4 className="font-bold text-emerald-950 flex items-center gap-1.5 text-xs sm:text-sm font-['Montserrat']">
+                <DownloadCloud className="w-4 h-4 text-[#1e4916]" />
                 Download Source Code Lengkap (.ZIP)
               </h4>
-              <p className="text-[11px] sm:text-xs text-gray-700 mt-0.5">
+              <p className="text-[11px] sm:text-xs text-slate-600 mt-0.5">
                 Sudah termasuk konfigurasi GitHub Actions, ikon PWA, Tailwind CSS, dan script build siap deploy.
               </p>
             </div>
@@ -106,7 +106,7 @@ export const GitHubGuideModal: React.FC<GitHubGuideModalProps> = ({
                 downloadProjectZip();
                 onShowToast('Mulai mengunduh file ZIP proyek...');
               }}
-              className="px-3.5 py-1.5 bg-[#275d1d] hover:bg-[#1f4a17] text-white font-bold text-xs rounded transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow"
+              className="px-3.5 py-1.5 bg-[#1e4916] hover:bg-[#15340f] text-white font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer shrink-0 shadow-xs"
             >
               <DownloadCloud className="w-3.5 h-3.5" />
               <span>Download ZIP</span>
@@ -300,13 +300,13 @@ git push -u origin main`}
         </div>
 
         {/* Modal Footer */}
-        <div className="bg-[#f5f5f5] px-6 py-3 border-t border-gray-200 flex justify-between items-center shrink-0">
-          <span className="text-xs text-gray-500">
+        <div className="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-between items-center shrink-0">
+          <span className="text-xs text-slate-500">
             Base path sudah disetel <code>./</code> sehingga aset tidak akan 404 di GitHub Pages.
           </span>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded text-xs font-bold bg-[#275d1d] hover:bg-[#1f4a17] text-white transition-colors cursor-pointer shadow-xs"
+            className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-[#1e4916] hover:bg-[#15340f] text-white transition-colors cursor-pointer shadow-xs"
           >
             Tutup
           </button>
